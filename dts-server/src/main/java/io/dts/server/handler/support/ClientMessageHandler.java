@@ -14,9 +14,12 @@
 package io.dts.server.handler.support;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Maps;
 
 import io.dts.common.api.DtsServerMessageSender;
 import io.dts.common.context.DtsXID;
@@ -40,6 +43,9 @@ import io.dts.server.struct.GlobalLogState;
  */
 public interface ClientMessageHandler {
 
+  public static final Map<Long, GlobalLog> COMMINTING_GLOBALLOG_CACHE = Maps.newConcurrentMap();
+
+  public static final Map<Long, GlobalLog> ROLLBACKING_GLOBALLOG_CACHE = Maps.newConcurrentMap();
 
   String processMessage(BeginMessage beginMessage, String clientIp);
 
@@ -83,6 +89,8 @@ public interface ClientMessageHandler {
               List<BranchLog> branchLogs = dtsLogDao.getBranchLogs(tranId);
               // 通知各个分支开始提交
               try {
+                globalLog.setState(GlobalLogState.Commiting.getValue());
+                COMMINTING_GLOBALLOG_CACHE.put(tranId, globalLog);
                 this.syncGlobalCommit(branchLogs, globalLog.getTransId());
                 globalLog.setState(GlobalLogState.Committed.getValue());
                 dtsLogDao.deleteGlobalLog(globalLog.getTransId());
@@ -93,6 +101,8 @@ public interface ClientMessageHandler {
                 throw new DtsException(e, "notify resourcemanager to commit failed");
               }
               return;
+            case Commiting:
+              throw new DtsException("Transaction is commiting!transactionId is:" + tranId);
             default:
               throw new DtsException("Unknown state " + globalLog.getState());
           }
@@ -113,6 +123,8 @@ public interface ClientMessageHandler {
               List<BranchLog> branchLogs = dtsLogDao.getBranchLogs(tranId);
               // 通知各个分支开始回滚
               try {
+                globalLog.setState(GlobalLogState.Rollbacking.getValue());
+                ROLLBACKING_GLOBALLOG_CACHE.put(tranId, globalLog);
                 this.syncGlobalRollback(branchLogs, globalLog.getTransId());
                 globalLog.setState(GlobalLogState.Rollbacked.getValue());
                 dtsLogDao.deleteGlobalLog(globalLog.getTransId());
@@ -123,6 +135,8 @@ public interface ClientMessageHandler {
                 throw new DtsException("notify resourcemanager to commit failed");
               }
               return;
+            case Rollbacking:
+              throw new DtsException("Transaction is robacking!transactionId is:" + tranId);
             default:
               throw new DtsException("Unknown state " + globalLog.getState());
           }
