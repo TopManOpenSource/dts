@@ -68,6 +68,8 @@ public interface ClientMessageHandler extends EntryExpiredListener<Long, GlobalL
       private final IMap<Long, GlobalLog> ROLLBACKING_GLOBALLOG_CACHE =
           hazelcatInstance.getMap("ROLLBACKING_GLOBALLOG_CACHE");
 
+      private final Object LOCK = new Object();
+
       // 开始一个事务
       @Override
       public String processMessage(BeginMessage beginMessage, String clientIp) {
@@ -91,29 +93,31 @@ public interface ClientMessageHandler extends EntryExpiredListener<Long, GlobalL
         } else {
           switch (GlobalLogState.parse(globalLog.getState())) {
             case Begin:
-              if (COMMINTING_GLOBALLOG_CACHE.get(tranId) == null) {
-                List<BranchLog> branchLogs = dtsLogDao.getBranchLogs(tranId);
-                try {
-                  // 设置事务状态为提交中状态
-                  globalLog.setState(GlobalLogState.Commiting.getValue());
-                  // 缓存提交中状态
-                  COMMINTING_GLOBALLOG_CACHE.put(tranId, globalLog, globalLog.getTimeout(),
-                      TimeUnit.MILLISECONDS);
-                  // 计算事务超时
-                  COMMINTING_GLOBALLOG_CACHE.addEntryListener(this, tranId, true);
-                  // 通知各个分支开始提交
-                  this.syncGlobalCommit(branchLogs, globalLog.getTransId());
-                  // 设置事务状态为已提交状态
-                  globalLog.setState(GlobalLogState.Committed.getValue());
-                  // 清除数据库的事务
-                  dtsLogDao.deleteGlobalLog(globalLog.getTransId());
-                  // 清除缓存中的事务
-                  COMMINTING_GLOBALLOG_CACHE.remove(tranId);
-                } catch (Exception e) {
-                  logger.error(e.getMessage(), e);
-                  globalLog.setState(GlobalLogState.CmmittedFailed.getValue());
-                  dtsLogDao.updateGlobalLog(globalLog);
-                  throw new DtsException(e, "notify resourcemanager to commit failed");
+              synchronized (LOCK) {
+                if (COMMINTING_GLOBALLOG_CACHE.get(tranId) == null) {
+                  List<BranchLog> branchLogs = dtsLogDao.getBranchLogs(tranId);
+                  try {
+                    // 设置事务状态为提交中状态
+                    globalLog.setState(GlobalLogState.Commiting.getValue());
+                    // 缓存提交中状态
+                    COMMINTING_GLOBALLOG_CACHE.put(tranId, globalLog, globalLog.getTimeout(),
+                        TimeUnit.MILLISECONDS);
+                    // 计算事务超时
+                    COMMINTING_GLOBALLOG_CACHE.addEntryListener(this, tranId, true);
+                    // 通知各个分支开始提交
+                    this.syncGlobalCommit(branchLogs, globalLog.getTransId());
+                    // 设置事务状态为已提交状态
+                    globalLog.setState(GlobalLogState.Committed.getValue());
+                    // 清除数据库的事务
+                    dtsLogDao.deleteGlobalLog(globalLog.getTransId());
+                    // 清除缓存中的事务
+                    COMMINTING_GLOBALLOG_CACHE.remove(tranId);
+                  } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    globalLog.setState(GlobalLogState.CmmittedFailed.getValue());
+                    dtsLogDao.updateGlobalLog(globalLog);
+                    throw new DtsException(e, "notify resourcemanager to commit failed");
+                  }
                 }
               }
             case Commiting:
@@ -135,25 +139,27 @@ public interface ClientMessageHandler extends EntryExpiredListener<Long, GlobalL
         } else {
           switch (GlobalLogState.parse(globalLog.getState())) {
             case Begin:
-              if (ROLLBACKING_GLOBALLOG_CACHE.get(tranId) == null) {
-                List<BranchLog> branchLogs = dtsLogDao.getBranchLogs(tranId);
-                try {
-                  // 设置事务状态为回滚中状态
-                  globalLog.setState(GlobalLogState.Rollbacking.getValue());
-                  // 缓存回滚中状态
-                  ROLLBACKING_GLOBALLOG_CACHE.put(tranId, globalLog, globalLog.getTimeout(),
-                      TimeUnit.MILLISECONDS);
-                  ROLLBACKING_GLOBALLOG_CACHE.addEntryListener(this, tranId, true);
-                  // 通知各个分支开始回滚
-                  this.syncGlobalRollback(branchLogs, globalLog.getTransId());
-                  globalLog.setState(GlobalLogState.Rollbacked.getValue());
-                  dtsLogDao.deleteGlobalLog(globalLog.getTransId());
-                  ROLLBACKING_GLOBALLOG_CACHE.remove(tranId);
-                } catch (Exception e) {
-                  logger.error(e.getMessage(), e);
-                  globalLog.setState(GlobalLogState.RollbackFailed.getValue());
-                  dtsLogDao.updateGlobalLog(globalLog);
-                  throw new DtsException("notify resourcemanager to commit failed");
+              synchronized (LOCK) {
+                if (ROLLBACKING_GLOBALLOG_CACHE.get(tranId) == null) {
+                  List<BranchLog> branchLogs = dtsLogDao.getBranchLogs(tranId);
+                  try {
+                    // 设置事务状态为回滚中状态
+                    globalLog.setState(GlobalLogState.Rollbacking.getValue());
+                    // 缓存回滚中状态
+                    ROLLBACKING_GLOBALLOG_CACHE.put(tranId, globalLog, globalLog.getTimeout(),
+                        TimeUnit.MILLISECONDS);
+                    ROLLBACKING_GLOBALLOG_CACHE.addEntryListener(this, tranId, true);
+                    // 通知各个分支开始回滚
+                    this.syncGlobalRollback(branchLogs, globalLog.getTransId());
+                    globalLog.setState(GlobalLogState.Rollbacked.getValue());
+                    dtsLogDao.deleteGlobalLog(globalLog.getTransId());
+                    ROLLBACKING_GLOBALLOG_CACHE.remove(tranId);
+                  } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    globalLog.setState(GlobalLogState.RollbackFailed.getValue());
+                    dtsLogDao.updateGlobalLog(globalLog);
+                    throw new DtsException("notify resourcemanager to commit failed");
+                  }
                 }
               }
             case Rollbacking:
