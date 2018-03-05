@@ -97,7 +97,7 @@ public interface ClientMessageHandler extends EntryExpiredListener<Long, GlobalL
                   // 设置事务状态为提交中状态
                   globalLog.setState(GlobalLogState.Commiting.getValue());
                   // 缓存提交中状态
-                  COMMINTING_GLOBALLOG_CACHE.put(tranId, globalLog, globalLog.getTimeout(),
+                  COMMINTING_GLOBALLOG_CACHE.set(tranId, globalLog, globalLog.getTimeout(),
                       TimeUnit.MILLISECONDS);
                   // 计算事务超时
                   COMMINTING_GLOBALLOG_CACHE.addEntryListener(this, tranId, true);
@@ -141,7 +141,7 @@ public interface ClientMessageHandler extends EntryExpiredListener<Long, GlobalL
                   // 设置事务状态为回滚中状态
                   globalLog.setState(GlobalLogState.Rollbacking.getValue());
                   // 缓存回滚中状态
-                  ROLLBACKING_GLOBALLOG_CACHE.put(tranId, globalLog, globalLog.getTimeout(),
+                  ROLLBACKING_GLOBALLOG_CACHE.set(tranId, globalLog, globalLog.getTimeout(),
                       TimeUnit.MILLISECONDS);
                   ROLLBACKING_GLOBALLOG_CACHE.addEntryListener(this, tranId, true);
                   // 通知各个分支开始回滚
