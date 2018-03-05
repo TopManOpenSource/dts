@@ -29,10 +29,6 @@ public class GlobalRollbackMessage implements CommandCustomHeader, RequestMessag
   @CFNotNull
   private long tranId;
 
-  /**
-   * 当server采用cluster mode，有可能消息接收svr并不是发起事务的svr，这个属性指示发起事务的svr地址
-   */
-  private String realSvrAddr;
 
   public long getTranId() {
     return tranId;
@@ -40,14 +36,6 @@ public class GlobalRollbackMessage implements CommandCustomHeader, RequestMessag
 
   public void setTranId(long tranId) {
     this.tranId = tranId;
-  }
-
-  public String getRealSvrAddr() {
-    return realSvrAddr;
-  }
-
-  public void setRealSvrAddr(String realSvrAddr) {
-    this.realSvrAddr = realSvrAddr;
   }
 
 
