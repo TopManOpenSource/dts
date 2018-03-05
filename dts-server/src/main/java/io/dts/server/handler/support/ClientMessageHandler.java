@@ -231,17 +231,10 @@ public interface ClientMessageHandler extends EntryExpiredListener<Long, GlobalL
         GlobalLog globalLog = dtsLogDao.getGlobalLog(tranId);
         List<BranchLog> branchLogs = dtsLogDao.getBranchLogs(tranId);
         try {
-          // 设置事务状态为回滚中状态
-          globalLog.setState(GlobalLogState.Rollbacking.getValue());
-          // 缓存回滚中状态
-          ROLLBACKING_GLOBALLOG_CACHE.put(tranId, globalLog, globalLog.getTimeout(),
-              TimeUnit.MILLISECONDS);
-          ROLLBACKING_GLOBALLOG_CACHE.addEntryListener(this, tranId, true);
           // 通知各个分支开始回滚
           this.syncGlobalRollback(branchLogs, globalLog.getTransId());
           globalLog.setState(GlobalLogState.Rollbacked.getValue());
           dtsLogDao.deleteGlobalLog(globalLog.getTransId());
-          ROLLBACKING_GLOBALLOG_CACHE.remove(tranId);
         } catch (Exception e) {
           logger.error(e.getMessage(), e);
           globalLog.setState(GlobalLogState.RollbackFailed.getValue());
