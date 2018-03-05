@@ -12,10 +12,19 @@ public enum GlobalLogState {
   Begin(1),
 
   /**
+   * 提交中
+   */
+  Commiting(6),
+
+  /**
    * 已提交
    */
   Committed(2),
 
+  /**
+   * 回滚中
+   */
+  Rollbacking(7),
   /**
    * 已回滚
    */
