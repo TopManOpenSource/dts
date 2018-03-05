@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.hazelcast.core.HazelcastInstance;
+
 import io.dts.common.api.DtsServerMessageHandler;
 import io.dts.common.api.DtsServerMessageSender;
 import io.dts.common.protocol.header.BeginMessage;
@@ -48,6 +50,8 @@ public class DtsServerMessageHandlerImpl implements DtsServerMessageHandler {
   @Autowired
   private DtsServerMessageSender serverMessageSender;
 
+  @Autowired
+  private HazelcastInstance hazelcatInstance;
 
   private ClientMessageHandler clientHandler;
 
@@ -55,8 +59,8 @@ public class DtsServerMessageHandlerImpl implements DtsServerMessageHandler {
 
   @PostConstruct
   public void init() {
-    clientHandler =
-        ClientMessageHandler.createClientMessageProcessor(dtsLogDao, serverMessageSender);
+    clientHandler = ClientMessageHandler.createClientMessageProcessor(dtsLogDao,
+        serverMessageSender, hazelcatInstance);
     rmHandler =
         RmMessageHandler.createResourceManagerMessageProcessor(dtsLogDao, serverMessageSender);
   }
