@@ -8,11 +8,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 @EnableTransactionManagement
 @EnableDiscoveryClient
-public class SalukiExampleServerApp {
+public class ScExampleServerApp {
 
   public static void main(String[] args) {
 
-    SpringApplication.run(SalukiExampleServerApp.class, args);
+    SpringApplication.run(ScExampleServerApp.class, args);
   }
 
 }

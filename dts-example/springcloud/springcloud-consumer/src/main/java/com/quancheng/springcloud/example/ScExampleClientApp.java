@@ -31,12 +31,12 @@ import io.dts.client.aop.annotation.EnableDtsConfiguration;
 @SpringBootApplication
 @EnableDtsConfiguration
 @EnableDiscoveryClient
-public class SpringCloudExampleClientApp implements CommandLineRunner {
+public class ScExampleClientApp implements CommandLineRunner {
   @Autowired
   private DtsTransactionScaner scaner;
 
   public static void main(String[] args) {
-    SpringApplication.run(SpringCloudExampleClientApp.class, args);
+    SpringApplication.run(ScExampleClientApp.class, args);
   }
 
   @Override
