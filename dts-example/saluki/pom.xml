@@ -6,9 +6,9 @@
 	<artifactId>dts-example</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<modules>
-		<module>dts-example-api</module>
-		<module>dts-example-consumer</module>
-		<module>dts-example-provider</module>
+		<module>saluki-api</module>
+		<module>saluki-consumer</module>
+		<module>saluki-provider</module>
 	</modules>
 	<packaging>pom</packaging>
 
