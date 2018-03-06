@@ -7,10 +7,10 @@
 		<artifactId>dts</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>dts-microservice-support</artifactId>
+	<artifactId>dts-microservice</artifactId>
 	<modules>
-		<module>dts-saluki-support</module>
-		<module>dts-springcloud-support</module>
+		<module>saluki-dts</module>
+		<module>spring-cloud-dts</module>
 	</modules>
 	<packaging>pom</packaging>
 	<dependencyManagement>
