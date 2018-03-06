@@ -1,5 +1,6 @@
 package io.dts.server.struct;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -8,8 +9,9 @@ import java.util.List;
 /**
  * 全局事务日志
  */
-public class GlobalLog {
+public class GlobalLog implements Serializable {
 
+  private static final long serialVersionUID = 5377118251174933927L;
   /**
    * 事务ID
    */

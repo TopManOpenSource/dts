@@ -116,6 +116,7 @@ public interface ClientMessageHandler extends EntryExpiredListener<Long, GlobalL
                   throw new DtsException(e, "notify resourcemanager to commit failed");
                 }
               }
+              return;
             case Commiting:
               throw new DtsException("Transaction is commiting!transactionId is:" + tranId);
             default:
@@ -156,6 +157,7 @@ public interface ClientMessageHandler extends EntryExpiredListener<Long, GlobalL
                   throw new DtsException("notify resourcemanager to commit failed");
                 }
               }
+              return;
             case Rollbacking:
               throw new DtsException("Transaction is robacking!transactionId is:" + tranId);
             default:
