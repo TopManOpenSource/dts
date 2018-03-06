@@ -12,7 +12,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<springboot.version>1.5.4.RELEASE</springboot.version>
+		<springboot.version>1.5.8.RELEASE</springboot.version>
 		<netty-tcnative.version>2.0.6.Final</netty-tcnative.version>
 		<spring-boot-starter-log4j.version>1.3.8.RELEASE</spring-boot-starter-log4j.version>
 		<saluki.version>1.5.7.RELEASE</saluki.version>

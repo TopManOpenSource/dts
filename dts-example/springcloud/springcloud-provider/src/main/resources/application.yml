@@ -1,6 +1,10 @@
 spring:
   application:
     name: springcloud-provider
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     url: jdbc:mysql://127.0.0.1:3306/dts
