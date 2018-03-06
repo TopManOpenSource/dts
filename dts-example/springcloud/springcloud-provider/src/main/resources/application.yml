@@ -5,6 +5,9 @@ spring:
     consul:
       host: localhost
       port: 8500
+      discovery:
+        healthCheckPath: /providerhealth
+        healthCheckInterval: 15s
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     url: jdbc:mysql://127.0.0.1:3306/dts

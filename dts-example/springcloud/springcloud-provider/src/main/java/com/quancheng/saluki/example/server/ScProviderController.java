@@ -9,7 +9,7 @@ import com.quancheng.saluki.example.repository.StudentDao;
 import com.quancheng.saluki.example.repository.entity.StudentDo;
 
 @RestController
-public class HelloServiceImpl {
+public class ScProviderController {
 
   @Autowired
   private StudentDao studentDao;
@@ -26,6 +26,12 @@ public class HelloServiceImpl {
   @RequestMapping("/exception")
   public String exception() {
     throw new RuntimeException("rollback");
+  }
+
+
+  @RequestMapping("/providerhealth")
+  public String health() {
+    return "UP";
   }
 
 

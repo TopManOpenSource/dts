@@ -94,7 +94,6 @@ public class DruidDBConfig {
   @Primary
   public DataSource dataSource() {
     DruidDataSource datasource = new DruidDataSource();
-
     datasource.setUrl(this.dbUrl);
     datasource.setUsername(username);
     datasource.setPassword(password);
