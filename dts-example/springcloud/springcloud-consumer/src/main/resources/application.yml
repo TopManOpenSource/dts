@@ -1,9 +1,12 @@
 spring:
   application:
-    name: dts-consumer
+    name: springcloud-consumer
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        healthCheckPath: /consumerhealth
+        healthCheckInterval: 15s
 server:
   port: 8080
-saluki:
-  grpc:
-    registryAddress: localhost:8500
-    referenceDefinition: META-INF/reference.json

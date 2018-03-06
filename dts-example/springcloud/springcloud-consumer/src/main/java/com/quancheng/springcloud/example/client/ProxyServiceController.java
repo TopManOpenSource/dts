@@ -17,4 +17,10 @@ public class ProxyServiceController {
     return rpcService.callService();
   }
 
+
+  @RequestMapping("/consumerhealth")
+  public String health() {
+    return "UP";
+  }
+
 }
