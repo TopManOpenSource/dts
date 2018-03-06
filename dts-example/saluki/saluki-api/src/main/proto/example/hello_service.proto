@@ -5,8 +5,6 @@ package com.quancheng.examples.service;
 import "example/hello.proto";
 service HelloService {
     rpc dtsNormal (com.quancheng.examples.model.HelloRequest) returns (com.quancheng.examples.model.HelloReply) {}
-    
-    
     rpc dtsException (com.quancheng.examples.model.HelloRequest) returns (com.quancheng.examples.model.HelloReply) {}
     
 }
