@@ -7,30 +7,15 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>dts-example-provider</artifactId>
-
+	<artifactId>saluki-consumer</artifactId>
 	<properties>
 		<os.detected.classifier>osx-x86_64</os.detected.classifier>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.dts</groupId>
-			<artifactId>dts-saluki-support</artifactId>
+			<artifactId>saluki-dts</artifactId>
 			<version>${dts.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>druid</artifactId>
-			<version>1.0.15</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.40</version>
 		</dependency>
 		<dependency>
 			<groupId>com.quancheng.saluki</groupId>
@@ -55,15 +40,15 @@
 			<artifactId>spring-boot-starter-jetty</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>io.dts</groupId>
+			<artifactId>saluki-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-tcnative-boringssl-static</artifactId>
 			<version>${netty-tcnative.version}</version>
 			<classifier>${os.detected.classifier}</classifier>
-		</dependency>
-		<dependency>
-			<groupId>io.dts</groupId>
-			<artifactId>dts-example-api</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 

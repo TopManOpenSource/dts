@@ -1,12 +1,15 @@
 package io.dts.server.struct;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * 
  * 事务分支日志
  */
-public class BranchLog {
+public class BranchLog implements Serializable {
+
+  private static final long serialVersionUID = 8212281582655543794L;
 
   /**
    * 分支ID
