@@ -13,12 +13,18 @@
  */
 package io.dts.springcloud;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.http.HttpRequest;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.support.HttpRequestWrapper;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -30,9 +36,24 @@ import feign.RequestTemplate;
  * @author liushiming
  * @version SpringCloudContextInterceptor.java, v 0.0.1 2017年11月20日 下午2:16:36 liushiming
  */
-public class SpringCloudContextInterceptor implements RequestInterceptor, HandlerInterceptor {
+public class SpringCloudContextInterceptor
+    implements RequestInterceptor, HandlerInterceptor, ClientHttpRequestInterceptor {
 
   private static final String CONTEXT_HEADER_PARENT = "x-context-";
+
+
+  @Override
+  public ClientHttpResponse intercept(HttpRequest request, byte[] body,
+      ClientHttpRequestExecution execution) throws IOException {
+    HttpRequestWrapper requestWrapper = new HttpRequestWrapper(request);
+    Map<String, String> contexts = SpringCloudContext.getContext().getAttachments();
+    for (Map.Entry<String, String> entry : contexts.entrySet()) {
+      String key = entry.getKey();
+      String value = entry.getValue();
+      requestWrapper.getHeaders().set(CONTEXT_HEADER_PARENT + key, value);
+    }
+    return execution.execute(requestWrapper, body);
+  }
 
   @Override
   public void apply(RequestTemplate template) {
@@ -66,11 +87,13 @@ public class SpringCloudContextInterceptor implements RequestInterceptor, Handle
         if (StringUtils.startsWithIgnoreCase(headerName, CONTEXT_HEADER_PARENT)) {
           String value = request.getHeader(headerName);
           String key = StringUtils.replace(headerName, CONTEXT_HEADER_PARENT, "");
-          SpringCloudContext.getContext().setAttachment(key, value);
+          // 这个的key被header透传后变成了小写，强制改成大写
+          SpringCloudContext.getContext().setAttachment(key.toUpperCase(), value);
         }
       }
     }
     return true;
   }
+
 
 }

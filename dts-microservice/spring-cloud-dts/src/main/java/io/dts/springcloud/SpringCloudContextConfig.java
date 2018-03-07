@@ -13,8 +13,14 @@
  */
 package io.dts.springcloud;
 
+import java.util.ArrayList;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -26,18 +32,47 @@ import feign.RequestInterceptor;
  * @version SpringCloudContextConfig.java, v 0.0.1 2017年11月20日 下午2:34:06 liushiming
  */
 @Configuration
-public class SpringCloudContextConfig extends WebMvcConfigurerAdapter {
+public class SpringCloudContextConfig {
 
-
-  @Override
-  public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(new SpringCloudContextInterceptor())//
-        .addPathPatterns("/*");
-    super.addInterceptors(registry);
+  @Configuration
+  protected class FeignContextConfig extends WebMvcConfigurerAdapter {
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+      registry.addInterceptor(new SpringCloudContextInterceptor())//
+          .addPathPatterns("/*");
+      super.addInterceptors(registry);
+    }
   }
 
   @Bean
   public RequestInterceptor requestInterceptor() {
     return new SpringCloudContextInterceptor();
   }
+
+  @Bean
+  public BeanPostProcessor contenxtInterceptorPostProcessor() {
+    return new BeanPostProcessor() {
+
+      @Override
+      public Object postProcessBeforeInitialization(Object bean, String beanName)
+          throws BeansException {
+        return bean;
+      }
+
+      @Override
+      public Object postProcessAfterInitialization(Object bean, String beanName)
+          throws BeansException {
+        if (bean instanceof RestTemplate) {
+          RestTemplate restTemplate = (RestTemplate) bean;
+          ArrayList<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
+          interceptors.add(new SpringCloudContextInterceptor());
+          interceptors.addAll(restTemplate.getInterceptors());
+          restTemplate.setInterceptors(interceptors);
+        }
+        return bean;
+      }
+
+    };
+  }
+
 }
