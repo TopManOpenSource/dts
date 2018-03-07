@@ -3,17 +3,16 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.dts</groupId>
-	<artifactId>dts-saluki</artifactId>
+	<artifactId>dts-springcloud</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<modules>
-		<module>saluki-api</module>
-		<module>saluki-consumer</module>
-		<module>saluki-provider</module>
+		<module>springcloud-consumer</module>
+		<module>springcloud-provider</module>
 	</modules>
 	<packaging>pom</packaging>
 
 	<properties>
-		<springboot.version>1.5.4.RELEASE</springboot.version>
+		<springboot.version>1.5.8.RELEASE</springboot.version>
 		<netty-tcnative.version>2.0.6.Final</netty-tcnative.version>
 		<spring-boot-starter-log4j.version>1.3.8.RELEASE</spring-boot-starter-log4j.version>
 		<saluki.version>1.5.7.RELEASE</saluki.version>
@@ -23,24 +22,11 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>com.quancheng.saluki</groupId>
-				<artifactId>saluki-core</artifactId>
-				<version>${saluki.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.quancheng.saluki</groupId>
-				<artifactId>saluki-service</artifactId>
-				<version>${saluki.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.quancheng.saluki</groupId>
-				<artifactId>spring-boot-starter-saluki</artifactId>
-				<version>${saluki.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.quancheng.saluki</groupId>
-				<artifactId>spring-boot-starter-saluki-monitor</artifactId>
-				<version>${saluki.version}</version>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-consul-dependencies</artifactId>
+				<version>1.3.0.RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
@@ -51,16 +37,6 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-web</artifactId>
 				<version>${springboot.version}</version>
-				<exclusions>
-					<exclusion>
-						<artifactId>spring-boot-starter-tomcat</artifactId>
-						<groupId>org.springframework.boot</groupId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.springframework.boot</groupId>
-						<artifactId>spring-boot-starter-logging</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
