@@ -58,6 +58,7 @@ public class ContextHystrixConcurrencyStrategy extends HystrixConcurrencyStrateg
     public HystrixContextCallable(Callable<S> callable) {
       this.attachments = SpringCloudContext.getContext().getAttachments();
       this.callable = callable;
+      SpringCloudContext.removeContext();
     }
 
     @Override
