@@ -70,6 +70,9 @@ public class ZookeeperServerCluster implements ServerCluster, PathChildrenCacheL
     if (StringUtils.isEmpty(connectString)) {
       connectString = System.getProperty(ZOOKEEPER_ENV_URL);
     }
+    if (connectString == null) {
+      throw new java.lang.IllegalArgumentException("pls config ZK_CONNECTION in JVM param ");
+    }
     try {
       RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
       client = CuratorFrameworkFactory.builder().connectString(connectString)
