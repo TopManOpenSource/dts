@@ -17,6 +17,8 @@ import java.util.ArrayList;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -24,24 +26,22 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import feign.RequestInterceptor;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
+import feign.RequestInterceptor;
+import io.dts.client.aop.DtsTransactionScaner;
 
 /**
  * @author liushiming
- * @version SpringCloudContextConfig.java, v 0.0.1 2017年11月20日 下午2:34:06 liushiming
+ * @version ContextHystrixAutoConfiguration.java, v 0.0.1 2017年11月22日 下午6:27:06 liushiming
  */
 @Configuration
-public class SpringCloudContextConfig {
-
-  @Configuration
-  protected class FeignContextConfig extends WebMvcConfigurerAdapter {
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-      registry.addInterceptor(new SpringCloudContextInterceptor())//
-          .addPathPatterns("/*");
-      super.addInterceptors(registry);
-    }
+@ConditionalOnBean(DtsTransactionScaner.class)
+public class SpringCloudContextAutoConfiguration {
+  @Bean
+  @ConditionalOnClass(HystrixCommand.class)
+  public ContextHystrixConcurrencyStrategy contextHystrixConcurrencyStrategy() {
+    return new ContextHystrixConcurrencyStrategy();
   }
 
   @Bean
@@ -75,4 +75,13 @@ public class SpringCloudContextConfig {
     };
   }
 
+  @Configuration
+  protected class FeignContextConfig extends WebMvcConfigurerAdapter {
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+      registry.addInterceptor(new SpringCloudContextInterceptor())//
+          .addPathPatterns("/*");
+      super.addInterceptors(registry);
+    }
+  }
 }
