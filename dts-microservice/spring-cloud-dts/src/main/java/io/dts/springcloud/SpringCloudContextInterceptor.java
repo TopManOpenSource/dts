@@ -80,6 +80,7 @@ public class SpringCloudContextInterceptor
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
       throws Exception {
+    SpringCloudContext.removeContext();
     Enumeration<String> headerNames = request.getHeaderNames();
     if (headerNames != null) {
       while (headerNames.hasMoreElements()) {
