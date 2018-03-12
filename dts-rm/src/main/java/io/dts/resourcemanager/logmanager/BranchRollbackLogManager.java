@@ -52,7 +52,7 @@ import io.dts.resourcemanager.undo.DtsUndo;
  * @author liushiming
  * @version BranchRollbackLogManager.java, v 0.0.1 2017年10月24日 下午3:57:23 liushiming
  */
-public class BranchRollbackLogManager extends DtsLogManagerImpl {
+public class BranchRollbackLogManager extends DtsLogManagerInstance {
   private static final Logger logger = LoggerFactory.getLogger(BranchRollbackLogManager.class);
 
   @Override

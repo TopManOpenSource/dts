@@ -82,6 +82,6 @@ public interface DtsLogManager {
   }
 
   public static DtsLogManager getInstance() {
-    return DtsLogManagerImpl.logManager;
+    return DtsLogManagerInstance.logManager;
   }
 }
