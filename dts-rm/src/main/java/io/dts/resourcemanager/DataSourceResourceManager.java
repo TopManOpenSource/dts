@@ -26,7 +26,7 @@ import io.dts.common.protocol.RequestMessage;
 import io.dts.common.protocol.header.RegisterMessage;
 import io.dts.common.protocol.header.RegisterResultMessage;
 import io.dts.remoting.RemoteConstant;
-import io.dts.resourcemanager.logmanager.DtsLogManager;
+import io.dts.resourcemanager.log.DtsLogManager;
 import io.dts.resourcemanager.network.DefaultDtsResourcMessageSender;
 import io.dts.resourcemanager.struct.ContextStep2;
 
