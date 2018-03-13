@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.dts.resourcemanager.logmanager;
+package io.dts.resourcemanager.log;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -82,6 +82,6 @@ public interface DtsLogManager {
   }
 
   public static DtsLogManager getInstance() {
-    return DtsLogManagerImpl.logManager;
+    return DtsLogManagerInstance.logManager;
   }
 }

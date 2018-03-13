@@ -69,10 +69,10 @@ public class RocketMQResourceManager implements ResourceManager {
   }
 
   @Override
-  public long register(String topic) throws DtsException {
+  public long register(String messageResult) throws DtsException {
     if (DtsContext.getInstance().inTxcTransaction()) {
       RegisterMessage registerMessage = new RegisterMessage();
-      registerMessage.setClientInfo(topic);
+      registerMessage.setClientInfo(messageResult);
       registerMessage.setTranId(DtsXID.getTransactionId(DtsContext.getInstance().getCurrentXid()));
       try {
         RegisterResultMessage resultMessage = (RegisterResultMessage) resourceMessageSender

@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.dts.resourcemanager.logmanager;
+package io.dts.resourcemanager.log;
 
 import java.sql.Blob;
 import java.sql.ResultSet;
@@ -30,15 +30,15 @@ import io.dts.resourcemanager.struct.ContextStep2;
  * @author liushiming
  * @version AbstractLogManager.java, v 0.0.1 2017年10月24日 下午3:48:10 liushiming
  */
-public class DtsLogManagerImpl implements DtsLogManager {
+public class DtsLogManagerInstance implements DtsLogManager {
 
-  protected static DtsLogManager logManager = new DtsLogManagerImpl();
+  protected static DtsLogManager logManager = new DtsLogManagerInstance();
 
   private volatile BranchRollbackLogManager rollbackLogManager;
 
   private volatile BranchCommitLogManager commitLogManager;
 
-  protected DtsLogManagerImpl() {}
+  protected DtsLogManagerInstance() {}
 
   /**
    * 分支事务提交，仅删除UndoLog
