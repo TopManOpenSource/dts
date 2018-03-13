@@ -26,8 +26,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-
 import feign.RequestInterceptor;
 import io.dts.client.aop.DtsTransactionScaner;
 
@@ -38,8 +36,9 @@ import io.dts.client.aop.DtsTransactionScaner;
 @Configuration
 @ConditionalOnBean(DtsTransactionScaner.class)
 public class SpringCloudContextAutoConfiguration {
+
   @Bean
-  @ConditionalOnClass(HystrixCommand.class)
+  @ConditionalOnClass(com.netflix.hystrix.HystrixCommand.class)
   public ContextHystrixConcurrencyStrategy contextHystrixConcurrencyStrategy() {
     return new ContextHystrixConcurrencyStrategy();
   }
