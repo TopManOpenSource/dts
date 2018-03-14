@@ -26,6 +26,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import com.netflix.hystrix.HystrixCommand;
+
 import feign.RequestInterceptor;
 import io.dts.client.aop.DtsTransactionScaner;
 
@@ -34,48 +36,53 @@ import io.dts.client.aop.DtsTransactionScaner;
  * @version ContextHystrixAutoConfiguration.java, v 0.0.1 2017年11月22日 下午6:27:06 liushiming
  */
 @Configuration
-@ConditionalOnBean(DtsTransactionScaner.class)
 public class SpringCloudContextAutoConfiguration {
 
-  @Bean
-  @ConditionalOnClass(com.netflix.hystrix.HystrixCommand.class)
-  public ContextHystrixConcurrencyStrategy contextHystrixConcurrencyStrategy() {
-    return new ContextHystrixConcurrencyStrategy();
-  }
+  @Configuration
+  @ConditionalOnBean(DtsTransactionScaner.class)
+  protected class ConsumerContextSupportConfig {
+    @Bean
+    @ConditionalOnClass(HystrixCommand.class)
+    public ContextHystrixConcurrencyStrategy contextHystrixConcurrencyStrategy() {
+      return new ContextHystrixConcurrencyStrategy();
+    }
 
-  @Bean
-  public RequestInterceptor requestInterceptor() {
-    return new SpringCloudContextInterceptor();
-  }
+    @Bean
+    public RequestInterceptor requestInterceptor() {
+      return new SpringCloudContextInterceptor();
+    }
 
-  @Bean
-  public BeanPostProcessor contenxtInterceptorPostProcessor() {
-    return new BeanPostProcessor() {
+    @Bean
+    public BeanPostProcessor contenxtInterceptorPostProcessor() {
+      return new BeanPostProcessor() {
 
-      @Override
-      public Object postProcessBeforeInitialization(Object bean, String beanName)
-          throws BeansException {
-        return bean;
-      }
-
-      @Override
-      public Object postProcessAfterInitialization(Object bean, String beanName)
-          throws BeansException {
-        if (bean instanceof RestTemplate) {
-          RestTemplate restTemplate = (RestTemplate) bean;
-          ArrayList<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
-          interceptors.add(new SpringCloudContextInterceptor());
-          interceptors.addAll(restTemplate.getInterceptors());
-          restTemplate.setInterceptors(interceptors);
+        @Override
+        public Object postProcessBeforeInitialization(Object bean, String beanName)
+            throws BeansException {
+          return bean;
         }
-        return bean;
-      }
 
-    };
+        @Override
+        public Object postProcessAfterInitialization(Object bean, String beanName)
+            throws BeansException {
+          if (bean instanceof RestTemplate) {
+            RestTemplate restTemplate = (RestTemplate) bean;
+            ArrayList<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
+            interceptors.add(new SpringCloudContextInterceptor());
+            interceptors.addAll(restTemplate.getInterceptors());
+            restTemplate.setInterceptors(interceptors);
+          }
+          return bean;
+        }
+
+      };
+    }
   }
+
+
 
   @Configuration
-  protected class FeignContextConfig extends WebMvcConfigurerAdapter {
+  protected class ProviderContextSupportConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
       registry.addInterceptor(new SpringCloudContextInterceptor())//
