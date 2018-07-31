@@ -25,14 +25,8 @@ public interface DtsLogManager {
 
     public static final String txcLogTableName = "dts_undo_log";
 
-    /**
-     * 分支事务提交，仅删除UndoLog
-     */
     void branchCommit(ContextStep2 context) throws SQLException;
 
-    /**
-     * 分支事务回滚，回滚阶段的数据库操作在一个本地事务中执行
-     */
     void branchRollback(ContextStep2 context) throws SQLException;
 
     default Integer insertUndoLog(final Connection connection, final TxcRuntimeContext txcContext) throws SQLException {

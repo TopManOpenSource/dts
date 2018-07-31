@@ -31,11 +31,6 @@ public class DtsLogManagerInstance implements DtsLogManager {
 
     private volatile BranchCommitLogManager commitLogManager;
 
-    protected DtsLogManagerInstance() {}
-
-    /**
-     * 分支事务提交，仅删除UndoLog
-     */
     @Override
     public void branchCommit(ContextStep2 context) throws SQLException {
         if (commitLogManager == null) {
@@ -44,9 +39,6 @@ public class DtsLogManagerInstance implements DtsLogManager {
         commitLogManager.branchCommit(context);
     }
 
-    /**
-     * 分支事务回滚，回滚阶段的数据库操作在一个本地事务中执行
-     */
     @Override
     public void branchRollback(ContextStep2 context) throws SQLException {
         if (rollbackLogManager == null) {
