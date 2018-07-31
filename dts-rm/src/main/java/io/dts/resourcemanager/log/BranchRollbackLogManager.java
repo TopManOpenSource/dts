@@ -1,15 +1,14 @@
 /*
  * Copyright 2014-2017 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package io.dts.resourcemanager.log;
 
@@ -45,16 +44,11 @@ import io.dts.resourcemanager.struct.ContextStep2;
 import io.dts.resourcemanager.struct.UndoLogMode;
 import io.dts.resourcemanager.undo.DtsUndo;
 
-/**
- * @author liushiming
- * @version BranchRollbackLogManager.java, v 0.0.1 2017年10月24日 下午3:57:23 liushiming
- */
 public class BranchRollbackLogManager extends DtsLogManagerInstance {
     private static final Logger logger = LoggerFactory.getLogger(BranchRollbackLogManager.class);
 
     @Override
     public void branchRollback(ContextStep2 context) throws SQLException {
-        // 根据dbName取注册的datasource
         DataSource datasource = DataSourceHolder.getDataSource(context.getDbname());
         DataSourceTransactionManager tm = new DataSourceTransactionManager(datasource);
         TransactionTemplate transactionTemplate = new TransactionTemplate(tm);
@@ -73,8 +67,7 @@ public class BranchRollbackLogManager extends DtsLogManagerInstance {
                         // 设置表meta
                         TxcTable o = info.getOriginalValue();
                         TxcTable p = info.getPresentValue();
-                        String tablename =
-                                o.getTableName() == null ? p.getTableName() : o.getTableName();
+                        String tablename = o.getTableName() == null ? p.getTableName() : o.getTableName();
                         TxcTableMeta tablemeta = null;
                         try {
                             tablemeta = DtsTableMetaTools.getTableMeta(tablename);
@@ -97,8 +90,8 @@ public class BranchRollbackLogManager extends DtsLogManagerInstance {
                         o.setTableMeta(tablemeta);
                         p.setTableMeta(tablemeta);
                     }
-                    logger.info(String.format("[logid:%d:xid:%s:branch:%d]", undolog.getId(),
-                            undolog.getXid(), undolog.getBranchId()));
+                    logger.info(String.format("[logid:%d:xid:%s:branch:%d]", undolog.getId(), undolog.getXid(),
+                        undolog.getBranchId()));
                     for (int i = undolog.getInfor().size(); i > 0; i--) {
                         RollbackInfor info = undolog.getInfor().get(i - 1);
                         // 检查脏写
@@ -106,8 +99,7 @@ public class BranchRollbackLogManager extends DtsLogManagerInstance {
                         List<String> rollbackSqls = DtsUndo.createDtsundo(info).buildRollbackSql();
                         logger.info("the rollback sql is " + rollbackSqls);
                         if (!CollectionUtils.isEmpty(rollbackSqls)) {
-                            String[] rollbackSqlArray =
-                                    rollbackSqls.toArray(new String[rollbackSqls.size()]);
+                            String[] rollbackSqlArray = rollbackSqls.toArray(new String[rollbackSqls.size()]);
                             template.batchUpdate(rollbackSqlArray);
                         }
                     }
@@ -126,8 +118,7 @@ public class BranchRollbackLogManager extends DtsLogManagerInstance {
     }
 
     private void checkDirtyRead(final JdbcTemplate template, final RollbackInfor info) {
-        String selectSql =
-                String.format("%s %s FOR UPDATE", info.getSelectSql(), info.getWhereCondition());
+        String selectSql = String.format("%s %s FOR UPDATE", info.getSelectSql(), info.getWhereCondition());
         StringBuilder retLog = new StringBuilder();
 
         long start = 0;
@@ -150,8 +141,7 @@ public class BranchRollbackLogManager extends DtsLogManagerInstance {
             retLog.append("]");
 
             if (valueByLog.equals(valueBySql) == false) {
-                throw new DtsException(ResultCode.ERROR.getValue(),
-                        "dirty read:" + retLog.toString());
+                throw new DtsException(ResultCode.ERROR.getValue(), "dirty read:" + retLog.toString());
             }
         } catch (Exception e) {
             throw new DtsException(e, "checkDirtyRead error:" + retLog.toString());
@@ -162,8 +152,7 @@ public class BranchRollbackLogManager extends DtsLogManagerInstance {
 
     }
 
-    private TxcTable getDBTxcTable(final JdbcTemplate template, final String selectSql,
-            final TxcTable p) {
+    private TxcTable getDBTxcTable(final JdbcTemplate template, final String selectSql, final TxcTable p) {
         TxcTable t = new TxcTable();
         t.setTableMeta(p.getTableMeta());
         template.query(selectSql, new RowCallbackHandler() {
@@ -201,7 +190,7 @@ public class BranchRollbackLogManager extends DtsLogManagerInstance {
             sb.append(c.getGlobalXid());
         }
 
-        return String.format("delete from %s where id in (%s) and status = %d", txcLogTableName,
-                sb.toString(), UndoLogMode.COMMON_LOG.getValue());
+        return String.format("delete from %s where id in (%s) and status = %d", txcLogTableName, sb.toString(),
+            UndoLogMode.COMMON_LOG.getValue());
     }
 }

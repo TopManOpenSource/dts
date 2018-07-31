@@ -1,18 +1,17 @@
 package io.dts.remoting;
 
-import io.dts.remoting.RemotingClient;
-import io.dts.remoting.RemotingServer;
+import static org.junit.Assert.assertTrue;
+import java.util.concurrent.Executors;
 import io.dts.remoting.exception.RemotingConnectException;
 import io.dts.remoting.exception.RemotingSendRequestException;
 import io.dts.remoting.exception.RemotingTimeoutException;
-import io.dts.remoting.netty.*;
+import io.dts.remoting.netty.NettyClientConfig;
+import io.dts.remoting.netty.NettyRemotingClient;
+import io.dts.remoting.netty.NettyRemotingServer;
+import io.dts.remoting.netty.NettyRequestProcessor;
+import io.dts.remoting.netty.NettyServerConfig;
 import io.dts.remoting.protocol.RemotingCommand;
 import io.netty.channel.ChannelHandlerContext;
-
-import java.util.concurrent.Executors;
-
-import static org.junit.Assert.assertTrue;
-
 
 /**
  * @author shijia.wxr<vintage.wang@gmail.com>
@@ -27,14 +26,12 @@ public class NettyIdleTest {
         return client;
     }
 
-
     public static RemotingServer createRemotingServer() throws InterruptedException {
         NettyServerConfig config = new NettyServerConfig();
         config.setServerChannelMaxIdleTimeSeconds(30);
         RemotingServer remotingServer = new NettyRemotingServer(config);
         remotingServer.registerProcessor(0, new NettyRequestProcessor() {
             private int i = 0;
-
 
             @Override
             public RemotingCommand processRequest(ChannelHandlerContext ctx, RemotingCommand request) {
@@ -47,10 +44,9 @@ public class NettyIdleTest {
         return remotingServer;
     }
 
-
     // @Test
-    public void test_idle_event() throws InterruptedException, RemotingConnectException,
-            RemotingSendRequestException, RemotingTimeoutException {
+    public void test_idle_event()
+        throws InterruptedException, RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException {
         RemotingServer server = createRemotingServer();
         RemotingClient client = createRemotingClient();
 

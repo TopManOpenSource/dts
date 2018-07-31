@@ -1,32 +1,27 @@
 /**
  * Copyright (C) 2010-2013 Alibaba Group Holding Limited
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package io.dts.remoting.common;
-
-import io.dts.remoting.exception.RemotingConnectException;
-import io.dts.remoting.exception.RemotingSendRequestException;
-import io.dts.remoting.exception.RemotingTimeoutException;
-import io.dts.remoting.protocol.RemotingCommand;
-import io.netty.channel.Channel;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-
+import io.dts.remoting.exception.RemotingConnectException;
+import io.dts.remoting.exception.RemotingSendRequestException;
+import io.dts.remoting.exception.RemotingTimeoutException;
+import io.dts.remoting.protocol.RemotingCommand;
+import io.netty.channel.Channel;
 
 /**
  * 通信层一些辅助方法
@@ -36,7 +31,6 @@ import java.nio.channels.SocketChannel;
  */
 public class RemotingHelper {
     public static final String RemotingLogName = "DtsRemoting";
-
 
     public static String exceptionSimpleDesc(final Throwable e) {
         StringBuffer sb = new StringBuffer();
@@ -54,7 +48,6 @@ public class RemotingHelper {
         return sb.toString();
     }
 
-
     /**
      * IP:PORT
      */
@@ -64,13 +57,11 @@ public class RemotingHelper {
         return isa;
     }
 
-
     /**
      * 短连接调用 TODO
      */
-    public static RemotingCommand invokeSync(final String addr, final RemotingCommand request,
-            final long timeoutMillis) throws InterruptedException, RemotingConnectException,
-            RemotingSendRequestException, RemotingTimeoutException {
+    public static RemotingCommand invokeSync(final String addr, final RemotingCommand request, final long timeoutMillis)
+        throws InterruptedException, RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException {
         long beginTime = System.currentTimeMillis();
         SocketAddress socketAddress = RemotingUtil.string2SocketAddress(addr);
         SocketChannel socketChannel = RemotingUtil.connect(socketAddress);
@@ -85,7 +76,7 @@ public class RemotingHelper {
                  * do notsupport timeouts
                  * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4614802
                  */
-                socketChannel.socket().setSoTimeout((int) timeoutMillis);
+                socketChannel.socket().setSoTimeout((int)timeoutMillis);
 
                 // 发送数据
                 ByteBuffer byteBufferRequest = request.encode();
@@ -98,8 +89,7 @@ public class RemotingHelper {
                                 throw new RemotingSendRequestException(addr);
                             }
                         }
-                    }
-                    else {
+                    } else {
                         throw new RemotingSendRequestException(addr);
                     }
 
@@ -120,8 +110,7 @@ public class RemotingHelper {
                                 throw new RemotingTimeoutException(addr, timeoutMillis);
                             }
                         }
-                    }
-                    else {
+                    } else {
                         throw new RemotingTimeoutException(addr, timeoutMillis);
                     }
 
@@ -141,8 +130,7 @@ public class RemotingHelper {
                                 throw new RemotingTimeoutException(addr, timeoutMillis);
                             }
                         }
-                    }
-                    else {
+                    } else {
                         throw new RemotingTimeoutException(addr, timeoutMillis);
                     }
 
@@ -153,31 +141,25 @@ public class RemotingHelper {
                 // 对应答数据解码
                 byteBufferBody.flip();
                 return RemotingCommand.decode(byteBufferBody);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
 
                 if (sendRequestOK) {
                     throw new RemotingTimeoutException(addr, timeoutMillis);
-                }
-                else {
+                } else {
                     throw new RemotingSendRequestException(addr);
                 }
-            }
-            finally {
+            } finally {
                 try {
                     socketChannel.close();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-        }
-        else {
+        } else {
             throw new RemotingConnectException(addr);
         }
     }
-
 
     public static String parseChannelRemoteAddr(final Channel channel) {
         if (null == channel) {
@@ -198,18 +180,16 @@ public class RemotingHelper {
         return "";
     }
 
-
     public static String parseChannelRemoteName(final Channel channel) {
         if (null == channel) {
             return "";
         }
-        final InetSocketAddress remote = (InetSocketAddress) channel.remoteAddress();
+        final InetSocketAddress remote = (InetSocketAddress)channel.remoteAddress();
         if (remote != null) {
             return remote.getAddress().getHostName();
         }
         return "";
     }
-
 
     public static String parseSocketAddressAddr(SocketAddress socketAddress) {
         if (socketAddress != null) {
@@ -222,10 +202,9 @@ public class RemotingHelper {
         return "";
     }
 
-
     public static String parseSocketAddressName(SocketAddress socketAddress) {
 
-        final InetSocketAddress addrs = (InetSocketAddress) socketAddress;
+        final InetSocketAddress addrs = (InetSocketAddress)socketAddress;
         if (addrs != null) {
             return addrs.getAddress().getHostName();
         }

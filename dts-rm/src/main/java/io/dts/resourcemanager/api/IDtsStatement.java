@@ -5,9 +5,9 @@ import java.sql.Statement;
 
 public interface IDtsStatement extends Statement {
 
-	IDtsConnection getDtsConnection() throws SQLException;
+    IDtsConnection getDtsConnection() throws SQLException;
 
-	Statement getRawStatement() throws SQLException;
+    Statement getRawStatement() throws SQLException;
 
-	String getTargetSql();
+    String getTargetSql();
 }

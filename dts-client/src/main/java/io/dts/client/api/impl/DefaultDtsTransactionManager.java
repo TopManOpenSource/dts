@@ -16,17 +16,13 @@ import io.dts.common.protocol.header.GlobalRollbackMessage;
 import io.dts.common.protocol.header.GlobalRollbackResultMessage;
 import io.dts.remoting.RemoteConstant;
 
-/**
- * Created by guoyubo on 2017/8/24.
- */
 public class DefaultDtsTransactionManager implements DtsTransactionManager {
 
     private static final Logger logger = LoggerFactory.getLogger(TransactionDtsInterceptor.class);
 
     private final DtsClientMessageSender dtsClient;
 
-    private static final DtsTransactionManager transcationManager =
-            new DefaultDtsTransactionManager();
+    private static final DtsTransactionManager transcationManager = new DefaultDtsTransactionManager();
 
     private DefaultDtsTransactionManager() {
         DefaultDtsClientMessageSender clientMessageSender = new DefaultDtsClientMessageSender();
@@ -43,8 +39,7 @@ public class DefaultDtsTransactionManager implements DtsTransactionManager {
         BeginMessage beginMessage = new BeginMessage();
         beginMessage.setTimeout(timeout);
         try {
-            BeginResultMessage beginResultMessage =
-                    dtsClient.invoke(beginMessage, RemoteConstant.RPC_INVOKE_TIMEOUT);
+            BeginResultMessage beginResultMessage = dtsClient.invoke(beginMessage, RemoteConstant.RPC_INVOKE_TIMEOUT);
             String transId = beginResultMessage.getXid();
             DtsContext.getInstance().bind(transId);
         } catch (Throwable th) {
@@ -73,8 +68,8 @@ public class DefaultDtsTransactionManager implements DtsTransactionManager {
             Exception ex = null;
             do {
                 try {
-                    resultMessage = (GlobalCommitResultMessage) dtsClient.invoke(commitMessage,
-                            RemoteConstant.RPC_INVOKE_TIMEOUT);
+                    resultMessage =
+                        (GlobalCommitResultMessage)dtsClient.invoke(commitMessage, RemoteConstant.RPC_INVOKE_TIMEOUT);
                     Thread.sleep(3000);
                 } catch (Exception e) {
                     ex = e;
@@ -86,18 +81,17 @@ public class DefaultDtsTransactionManager implements DtsTransactionManager {
             } while (retryTimes-- > 0);
             if (resultMessage == null) {
                 throw new DtsException("transaction " + DtsContext.getInstance().getCurrentXid()
-                        + " Global commit failed.server response is null");
+                    + " Global commit failed.server response is null");
             }
             if (ex != null) {
-                throw new DtsException(ex, "transaction " + DtsContext.getInstance().getCurrentXid()
-                        + " Global commit failed.");
+                throw new DtsException(ex,
+                    "transaction " + DtsContext.getInstance().getCurrentXid() + " Global commit failed.");
             }
         } finally {
             DtsContext.getInstance().unbind();
             if (logger.isDebugEnabled()) {
                 long end = System.currentTimeMillis();
-                logger.debug("send global commit message:" + commitMessage + " cost "
-                        + (end - start) + " ms.");
+                logger.debug("send global commit message:" + commitMessage + " cost " + (end - start) + " ms.");
             } else
                 logger.info("send global commit message:" + commitMessage);
         }
@@ -121,8 +115,8 @@ public class DefaultDtsTransactionManager implements DtsTransactionManager {
             Exception ex = null;
             do {
                 try {
-                    resultMessage = (GlobalRollbackResultMessage) dtsClient.invoke(rollbackMessage,
-                            RemoteConstant.RPC_INVOKE_TIMEOUT);
+                    resultMessage = (GlobalRollbackResultMessage)dtsClient.invoke(rollbackMessage,
+                        RemoteConstant.RPC_INVOKE_TIMEOUT);
                     Thread.sleep(3000);
                 } catch (Exception e) {
                     ex = e;
@@ -134,18 +128,17 @@ public class DefaultDtsTransactionManager implements DtsTransactionManager {
             } while (retryTimes-- > 0);
             if (resultMessage == null) {
                 throw new DtsException("transaction " + DtsContext.getInstance().getCurrentXid()
-                        + " Global rollback failed.server response is null");
+                    + " Global rollback failed.server response is null");
             }
             if (ex != null) {
-                throw new DtsException(ex, "transaction " + DtsContext.getInstance().getCurrentXid()
-                        + " Global rollback failed.");
+                throw new DtsException(ex,
+                    "transaction " + DtsContext.getInstance().getCurrentXid() + " Global rollback failed.");
             }
         } finally {
             DtsContext.getInstance().unbind();
             if (logger.isDebugEnabled()) {
                 long end = System.currentTimeMillis();
-                logger.debug("invoke global rollback message:" + rollbackMessage + " cost "
-                        + (end - start) + " ms.");
+                logger.debug("invoke global rollback message:" + rollbackMessage + " cost " + (end - start) + " ms.");
             }
         }
     }

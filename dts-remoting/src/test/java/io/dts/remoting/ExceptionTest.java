@@ -3,20 +3,19 @@
  */
 package io.dts.remoting;
 
-import io.dts.remoting.RemotingClient;
-import io.dts.remoting.RemotingServer;
+import static org.junit.Assert.assertTrue;
+import java.util.concurrent.Executors;
+import org.junit.Test;
 import io.dts.remoting.exception.RemotingConnectException;
 import io.dts.remoting.exception.RemotingSendRequestException;
 import io.dts.remoting.exception.RemotingTimeoutException;
-import io.dts.remoting.netty.*;
+import io.dts.remoting.netty.NettyClientConfig;
+import io.dts.remoting.netty.NettyRemotingClient;
+import io.dts.remoting.netty.NettyRemotingServer;
+import io.dts.remoting.netty.NettyRequestProcessor;
+import io.dts.remoting.netty.NettyServerConfig;
 import io.dts.remoting.protocol.RemotingCommand;
 import io.netty.channel.ChannelHandlerContext;
-import org.junit.Test;
-
-import java.util.concurrent.Executors;
-
-import static org.junit.Assert.assertTrue;
-
 
 /**
  * @author shijia.wxr<vintage.wang@gmail.com>
@@ -29,13 +28,11 @@ public class ExceptionTest {
         return client;
     }
 
-
     private static RemotingServer createRemotingServer() throws InterruptedException {
         NettyServerConfig config = new NettyServerConfig();
         RemotingServer client = new NettyRemotingServer(config);
         client.registerProcessor(0, new NettyRequestProcessor() {
             private int i = 0;
-
 
             @Override
             public RemotingCommand processRequest(ChannelHandlerContext ctx, RemotingCommand request) {
@@ -48,7 +45,6 @@ public class ExceptionTest {
         return client;
     }
 
-
     @Test
     public void test_CONNECT_EXCEPTION() {
         RemotingClient client = createRemotingClient();
@@ -57,17 +53,13 @@ public class ExceptionTest {
         RemotingCommand response = null;
         try {
             response = client.invokeSync("localhost:8888", request, 1000 * 3);
-        }
-        catch (RemotingConnectException e) {
+        } catch (RemotingConnectException e) {
             e.printStackTrace();
-        }
-        catch (RemotingSendRequestException e) {
+        } catch (RemotingSendRequestException e) {
             e.printStackTrace();
-        }
-        catch (RemotingTimeoutException e) {
+        } catch (RemotingTimeoutException e) {
             e.printStackTrace();
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         System.out.println("invoke result = " + response);

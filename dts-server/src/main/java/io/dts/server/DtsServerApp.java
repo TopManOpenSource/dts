@@ -1,20 +1,18 @@
 /*
  * Copyright 2014-2017 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package io.dts.server;
 
 import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,14 +22,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
-
 import com.hazelcast.config.Config;
 import com.hazelcast.config.DiscoveryStrategyConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.zookeeper.ZookeeperDiscoveryProperties;
 import com.hazelcast.zookeeper.ZookeeperDiscoveryStrategyFactory;
-
 import io.dts.server.network.NettyServerController;
 
 /**
@@ -41,43 +37,38 @@ import io.dts.server.network.NettyServerController;
 @SpringBootApplication
 public class DtsServerApp {
 
-  public static void main(String[] args) throws Exception {
-    ConfigurableApplicationContext context = SpringApplication.run(DtsServerApp.class, args);
-    NettyServerController controller = context.getBean(NettyServerController.class);
-    controller.start();
-  }
+    public static void main(String[] args) throws Exception {
+        ConfigurableApplicationContext context = SpringApplication.run(DtsServerApp.class, args);
+        NettyServerController controller = context.getBean(NettyServerController.class);
+        controller.start();
+    }
 
-  @Bean
-  public PlatformTransactionManager annotationDrivenTransactionManager(
-      @Autowired DataSource dataSource) {
-    return new DataSourceTransactionManager(dataSource);
-  }
+    @Bean
+    public PlatformTransactionManager annotationDrivenTransactionManager(@Autowired DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
 
-  @Bean
-  public TransactionTemplate transactionTemplate(
-      @Autowired PlatformTransactionManager transactionManager) {
-    return new TransactionTemplate(transactionManager);
-  }
+    @Bean
+    public TransactionTemplate transactionTemplate(@Autowired PlatformTransactionManager transactionManager) {
+        return new TransactionTemplate(transactionManager);
+    }
 
-  @Bean
-  public JdbcTemplate transactionTemplate(@Autowired DataSource dataSource) {
-    return new JdbcTemplate(dataSource);
-  }
+    @Bean
+    public JdbcTemplate transactionTemplate(@Autowired DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
 
-  @Bean
-  public HazelcastInstance hazelcastInstance() {
-    String zookeeperURL = System.getProperty("ZK_CONNECTION");
-    Config config = new Config();
-    config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
-    config.setProperty("hazelcast.discovery.enabled", "true");
-    DiscoveryStrategyConfig discoveryStrategyConfig =
-        new DiscoveryStrategyConfig(new ZookeeperDiscoveryStrategyFactory());
-    discoveryStrategyConfig.addProperty(ZookeeperDiscoveryProperties.ZOOKEEPER_URL.key(),
-        zookeeperURL);
-    config.getNetworkConfig().getJoin().getDiscoveryConfig()
-        .addDiscoveryStrategyConfig(discoveryStrategyConfig);
-    return Hazelcast.newHazelcastInstance(config);
-  }
-
+    @Bean
+    public HazelcastInstance hazelcastInstance() {
+        String zookeeperURL = System.getProperty("ZK_CONNECTION");
+        Config config = new Config();
+        config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+        config.setProperty("hazelcast.discovery.enabled", "true");
+        DiscoveryStrategyConfig discoveryStrategyConfig =
+            new DiscoveryStrategyConfig(new ZookeeperDiscoveryStrategyFactory());
+        discoveryStrategyConfig.addProperty(ZookeeperDiscoveryProperties.ZOOKEEPER_URL.key(), zookeeperURL);
+        config.getNetworkConfig().getJoin().getDiscoveryConfig().addDiscoveryStrategyConfig(discoveryStrategyConfig);
+        return Hazelcast.newHazelcastInstance(config);
+    }
 
 }

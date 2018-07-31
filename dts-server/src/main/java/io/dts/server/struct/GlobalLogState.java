@@ -6,64 +6,64 @@ package io.dts.server.struct;
  */
 public enum GlobalLogState {
 
-  /**
-   * 开始
-   */
-  Begin(1),
+    /**
+     * 开始
+     */
+    Begin(1),
 
-  /**
-   * 提交中
-   */
-  Commiting(6),
+    /**
+     * 提交中
+     */
+    Commiting(6),
 
-  /**
-   * 已提交
-   */
-  Committed(2),
+    /**
+     * 已提交
+     */
+    Committed(2),
 
-  /**
-   * 回滚中
-   */
-  Rollbacking(7),
-  /**
-   * 已回滚
-   */
-  Rollbacked(3),
+    /**
+     * 回滚中
+     */
+    Rollbacking(7),
+    /**
+     * 已回滚
+     */
+    Rollbacked(3),
 
-  /**
-   * 提交失败
-   */
-  CmmittedFailed(4),
+    /**
+     * 提交失败
+     */
+    CmmittedFailed(4),
 
-  /**
-   * 回滚失败
-   */
-  RollbackFailed(5);
-  /**
-   * @param value
-   */
-  private GlobalLogState(int value) {
-    this.value = value;
-  }
-
-  /**
-   * @return
-   */
-  public int getValue() {
-    return value;
-  }
-
-  /**
-   * 状态值
-   */
-  private int value;
-
-  public static GlobalLogState parse(int value) {
-    for (GlobalLogState state : GlobalLogState.values()) {
-      if (state.getValue() == value) {
-        return state;
-      }
+    /**
+     * 回滚失败
+     */
+    RollbackFailed(5);
+    /**
+     * @param value
+     */
+    private GlobalLogState(int value) {
+        this.value = value;
     }
-    return null;
-  }
+
+    /**
+     * @return
+     */
+    public int getValue() {
+        return value;
+    }
+
+    /**
+     * 状态值
+     */
+    private int value;
+
+    public static GlobalLogState parse(int value) {
+        for (GlobalLogState state : GlobalLogState.values()) {
+            if (state.getValue() == value) {
+                return state;
+            }
+        }
+        return null;
+    }
 }

@@ -17,17 +17,12 @@ import io.dts.parser.struct.TxcColumnMeta;
 import io.dts.parser.struct.TxcIndex;
 import io.dts.parser.struct.TxcTableMeta;
 
-/**
- * Created by guoyubo on 2017/9/25.
- */
 public class DtsTableMetaTools {
 
     private static long cacheSize = 1000;
     private static long expireTime = 300 * 1000;
-    private final static Cache<String, TxcTableMeta> tableMetaCache =
-            CacheBuilder.newBuilder().maximumSize(cacheSize)
-                    .expireAfterWrite(expireTime, TimeUnit.MILLISECONDS).softValues().build();
-
+    private final static Cache<String, TxcTableMeta> tableMetaCache = CacheBuilder.newBuilder().maximumSize(cacheSize)
+        .expireAfterWrite(expireTime, TimeUnit.MILLISECONDS).softValues().build();
 
     private static Logger logger = LoggerFactory.getLogger(DtsTableMetaTools.class);
 
@@ -91,8 +86,7 @@ public class DtsTableMetaTools {
     }
 
     @SuppressWarnings("resource")
-    private static TxcTableMeta fetchSchema0(Connection conn, String tableName)
-            throws SQLException {
+    private static TxcTableMeta fetchSchema0(Connection conn, String tableName) throws SQLException {
         java.sql.Statement stmt = null;
         java.sql.ResultSet rs = null;
         try {
@@ -104,7 +98,7 @@ public class DtsTableMetaTools {
             return resultSetMetaToSchema(rsmd, dbmd);
         } catch (Exception e) {
             if (e instanceof SQLException) {
-                if ("42000".equals(((SQLException) e).getSQLState())) {
+                if ("42000".equals(((SQLException)e).getSQLState())) {
                     try {
                         rs = stmt.executeQuery("select * from " + tableName + " where rownum <= 2");
                         java.sql.ResultSetMetaData rsmd = rs.getMetaData();
@@ -115,7 +109,7 @@ public class DtsTableMetaTools {
                         logger.warn("{}", e);
                     }
                 }
-                throw (SQLException) e; // 千万不要吞异常，否则后面没法处理。。。
+                throw (SQLException)e; // 千万不要吞异常，否则后面没法处理。。。
             }
             logger.error("1111", "schema of " + tableName + " cannot be fetched", e);
             return null;
@@ -144,7 +138,7 @@ public class DtsTableMetaTools {
     // true--aaa-3-1-roll_number-A-0
     // true--aaa-3-2-name-A-0
     private static TxcTableMeta resultSetMetaToSchema(ResultSetMetaData rsmd, DatabaseMetaData dbmd)
-            throws SQLException {
+        throws SQLException {
         String tableName = rsmd.getTableName(1);
         String schemaName = rsmd.getSchemaName(1);
         String catalogName = rsmd.getCatalogName(1);

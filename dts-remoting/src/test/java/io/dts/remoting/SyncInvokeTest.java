@@ -3,14 +3,9 @@
  */
 package io.dts.remoting;
 
-import io.dts.remoting.RemotingClient;
-import io.dts.remoting.RemotingServer;
-import io.dts.remoting.protocol.RemotingCommand;
-
-import org.junit.Test;
-
 import static org.junit.Assert.assertTrue;
-
+import org.junit.Test;
+import io.dts.remoting.protocol.RemotingCommand;
 
 /**
  * @author shijia.wxr<vintage.wang@gmail.com>
@@ -27,8 +22,7 @@ public class SyncInvokeTest {
                 RemotingCommand response = client.invokeSync("localhost:8888", request, 1000 * 3);
                 System.out.println(i + "\t" + "invoke result = " + response);
                 assertTrue(response != null);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 throw e;
             }

@@ -4,20 +4,19 @@ import io.dts.common.protocol.RequestMessage;
 import io.dts.remoting.CommandCustomHeader;
 import io.dts.remoting.exception.RemotingCommandException;
 
-
 public class HeartbeatRequestHeader implements CommandCustomHeader, RequestMessage {
 
-  private String clientOrResourceInfo;
+    private String clientOrResourceInfo;
 
-  public String getClientOrResourceInfo() {
-    return clientOrResourceInfo;
-  }
+    public String getClientOrResourceInfo() {
+        return clientOrResourceInfo;
+    }
 
-  public void setClientOrResourceInfo(String dbName) {
-    this.clientOrResourceInfo = dbName;
-  }
+    public void setClientOrResourceInfo(String dbName) {
+        this.clientOrResourceInfo = dbName;
+    }
 
-  @Override
-  public void checkFields() throws RemotingCommandException {}
+    @Override
+    public void checkFields() throws RemotingCommandException {}
 
 }
