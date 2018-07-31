@@ -19,9 +19,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.sql.DataSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,7 +30,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
-
 import io.dts.common.context.DtsXID;
 import io.dts.common.exception.DtsException;
 import io.dts.common.protocol.ResultCode;
@@ -53,155 +50,158 @@ import io.dts.resourcemanager.undo.DtsUndo;
  * @version BranchRollbackLogManager.java, v 0.0.1 2017年10月24日 下午3:57:23 liushiming
  */
 public class BranchRollbackLogManager extends DtsLogManagerInstance {
-  private static final Logger logger = LoggerFactory.getLogger(BranchRollbackLogManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(BranchRollbackLogManager.class);
 
-  @Override
-  public void branchRollback(ContextStep2 context) throws SQLException {
-    // 根据dbName取注册的datasource
-    DataSource datasource = DataSourceHolder.getDataSource(context.getDbname());
-    DataSourceTransactionManager tm = new DataSourceTransactionManager(datasource);
-    TransactionTemplate transactionTemplate = new TransactionTemplate(tm);
-    final JdbcTemplate template = new JdbcTemplate(datasource);
-    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-      @Override
-      protected void doInTransactionWithoutResult(TransactionStatus status) {
-        try {
-          // 查询事务日志
-          long gid = DtsXID.getGlobalXID(context.getXid(), context.getBranchId());
-          TxcRuntimeContext undolog = getTxcRuntimeContexts(gid, template);
-          if (undolog == null) {
-            return;
-          }
-          for (RollbackInfor info : undolog.getInfor()) {
-            // 设置表meta
-            TxcTable o = info.getOriginalValue();
-            TxcTable p = info.getPresentValue();
-            String tablename = o.getTableName() == null ? p.getTableName() : o.getTableName();
-            TxcTableMeta tablemeta = null;
-            try {
-              tablemeta = DtsTableMetaTools.getTableMeta("", tablename);
-            } catch (Exception e) {
-              ; // 吞掉
-            }
-            if (tablemeta == null) {
-              DataSource datasource = null;
-              Connection conn = null;
-              try {
-                datasource = template.getDataSource();
-                conn = DataSourceUtils.getConnection(datasource);
-                tablemeta = DtsTableMetaTools.getTableMeta(conn, tablename);
-              } finally {
-                if (conn != null) {
-                  DataSourceUtils.releaseConnection(conn, datasource);
+    @Override
+    public void branchRollback(ContextStep2 context) throws SQLException {
+        // 根据dbName取注册的datasource
+        DataSource datasource = DataSourceHolder.getDataSource(context.getDbname());
+        DataSourceTransactionManager tm = new DataSourceTransactionManager(datasource);
+        TransactionTemplate transactionTemplate = new TransactionTemplate(tm);
+        final JdbcTemplate template = new JdbcTemplate(datasource);
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                    // 查询事务日志
+                    long gid = DtsXID.getGlobalXID(context.getXid(), context.getBranchId());
+                    TxcRuntimeContext undolog = getTxcRuntimeContexts(gid, template);
+                    if (undolog == null) {
+                        return;
+                    }
+                    for (RollbackInfor info : undolog.getInfor()) {
+                        // 设置表meta
+                        TxcTable o = info.getOriginalValue();
+                        TxcTable p = info.getPresentValue();
+                        String tablename =
+                                o.getTableName() == null ? p.getTableName() : o.getTableName();
+                        TxcTableMeta tablemeta = null;
+                        try {
+                            tablemeta = DtsTableMetaTools.getTableMeta(tablename);
+                        } catch (Exception e) {
+                            ; // 吞掉
+                        }
+                        if (tablemeta == null) {
+                            DataSource datasource = null;
+                            Connection conn = null;
+                            try {
+                                datasource = template.getDataSource();
+                                conn = DataSourceUtils.getConnection(datasource);
+                                tablemeta = DtsTableMetaTools.getTableMeta(conn, tablename);
+                            } finally {
+                                if (conn != null) {
+                                    DataSourceUtils.releaseConnection(conn, datasource);
+                                }
+                            }
+                        }
+                        o.setTableMeta(tablemeta);
+                        p.setTableMeta(tablemeta);
+                    }
+                    logger.info(String.format("[logid:%d:xid:%s:branch:%d]", undolog.getId(),
+                            undolog.getXid(), undolog.getBranchId()));
+                    for (int i = undolog.getInfor().size(); i > 0; i--) {
+                        RollbackInfor info = undolog.getInfor().get(i - 1);
+                        // 检查脏写
+                        checkDirtyRead(template, info);
+                        List<String> rollbackSqls = DtsUndo.createDtsundo(info).buildRollbackSql();
+                        logger.info("the rollback sql is " + rollbackSqls);
+                        if (!CollectionUtils.isEmpty(rollbackSqls)) {
+                            String[] rollbackSqlArray =
+                                    rollbackSqls.toArray(new String[rollbackSqls.size()]);
+                            template.batchUpdate(rollbackSqlArray);
+                        }
+                    }
+                    // 删除undolog
+                    String deleteSql = getDeleteUndoLogSql(Arrays.asList(context));
+                    logger.info("delete undo log sql" + deleteSql);
+                    template.execute(deleteSql);
+                } catch (Exception ex) {
+                    status.setRollbackOnly();
+                    throw new DtsException(ex, "rollback error");
                 }
-              }
+
             }
-            o.setTableMeta(tablemeta);
-            p.setTableMeta(tablemeta);
-          }
-          logger.info(String.format("[logid:%d:xid:%s:branch:%d]", undolog.getId(),
-              undolog.getXid(), undolog.getBranchId()));
-          for (int i = undolog.getInfor().size(); i > 0; i--) {
-            RollbackInfor info = undolog.getInfor().get(i - 1);
-            // 检查脏写
-            checkDirtyRead(template, info);
-            List<String> rollbackSqls = DtsUndo.createDtsundo(info).buildRollbackSql();
-            logger.info("the rollback sql is " + rollbackSqls);
-            if (!CollectionUtils.isEmpty(rollbackSqls)) {
-              String[] rollbackSqlArray = rollbackSqls.toArray(new String[rollbackSqls.size()]);
-              template.batchUpdate(rollbackSqlArray);
-            }
-          }
-          // 删除undolog
-          String deleteSql = getDeleteUndoLogSql(Arrays.asList(context));
-          logger.info("delete undo log sql" + deleteSql);
-          template.execute(deleteSql);
-        } catch (Exception ex) {
-          status.setRollbackOnly();
-          throw new DtsException(ex, "rollback error");
-        }
+        });
 
-      }
-    });
-
-  }
-
-  private void checkDirtyRead(final JdbcTemplate template, final RollbackInfor info) {
-    String selectSql =
-        String.format("%s %s FOR UPDATE", info.getSelectSql(), info.getWhereCondition());
-    StringBuilder retLog = new StringBuilder();
-
-    long start = 0;
-    if (logger.isDebugEnabled())
-      start = System.currentTimeMillis();
-    try {
-      TxcTable p = info.getPresentValue();
-      final String valueByLog = p.toString();
-
-      TxcTable t = getDBTxcTable(template, selectSql, p);
-
-      final String valueBySql = t.toString();
-
-      retLog.append("--Log:[");
-      retLog.append(valueByLog);
-      retLog.append("]");
-
-      retLog.append("--Db[");
-      retLog.append(valueBySql);
-      retLog.append("]");
-
-      if (valueByLog.equals(valueBySql) == false) {
-        throw new DtsException(ResultCode.ERROR.getValue(), "dirty read:" + retLog.toString());
-      }
-    } catch (Exception e) {
-      throw new DtsException(e, "checkDirtyRead error:" + retLog.toString());
-    } finally {
-      if (logger.isDebugEnabled())
-        logger.debug(selectSql + " cost " + (System.currentTimeMillis() - start) + " ms");
     }
 
-  }
+    private void checkDirtyRead(final JdbcTemplate template, final RollbackInfor info) {
+        String selectSql =
+                String.format("%s %s FOR UPDATE", info.getSelectSql(), info.getWhereCondition());
+        StringBuilder retLog = new StringBuilder();
 
-  private TxcTable getDBTxcTable(final JdbcTemplate template, final String selectSql,
-      final TxcTable p) {
-    TxcTable t = new TxcTable();
-    t.setTableMeta(p.getTableMeta());
-    template.query(selectSql, new RowCallbackHandler() {
-      @Override
-      public void processRow(ResultSet rs) throws SQLException {
-        java.sql.ResultSetMetaData rsmd = rs.getMetaData();
-        int column = rsmd.getColumnCount();
-        List<TxcField> fields = new ArrayList<TxcField>(column);
-        for (int i = 1; i <= column; i++) {
-          TxcField field = new TxcField();
-          field.setFieldName(rsmd.getColumnName(i));
-          field.setFieldType(rsmd.getColumnType(i));
-          field.setFieldValue(rs.getObject(i));
-          fields.add(field);
+        long start = 0;
+        if (logger.isDebugEnabled())
+            start = System.currentTimeMillis();
+        try {
+            TxcTable p = info.getPresentValue();
+            final String valueByLog = p.toString();
+
+            TxcTable t = getDBTxcTable(template, selectSql, p);
+
+            final String valueBySql = t.toString();
+
+            retLog.append("--Log:[");
+            retLog.append(valueByLog);
+            retLog.append("]");
+
+            retLog.append("--Db[");
+            retLog.append(valueBySql);
+            retLog.append("]");
+
+            if (valueByLog.equals(valueBySql) == false) {
+                throw new DtsException(ResultCode.ERROR.getValue(),
+                        "dirty read:" + retLog.toString());
+            }
+        } catch (Exception e) {
+            throw new DtsException(e, "checkDirtyRead error:" + retLog.toString());
+        } finally {
+            if (logger.isDebugEnabled())
+                logger.debug(selectSql + " cost " + (System.currentTimeMillis() - start) + " ms");
         }
 
-        TxcLine line = new TxcLine();
-        line.setTableMeta(t.getTableMeta());
-        line.setFields(fields);
-        t.addLine(line);
-      }
-    });
-    return t;
-  }
-
-  private String getDeleteUndoLogSql(final List<ContextStep2> contexts) {
-    StringBuilder sb = new StringBuilder();
-    boolean flag = false;
-    for (ContextStep2 c : contexts) {
-      if (flag == true) {
-        sb.append(",");
-      } else {
-        flag = true;
-      }
-      sb.append(c.getGlobalXid());
     }
 
-    return String.format("delete from %s where id in (%s) and status = %d", txcLogTableName,
-        sb.toString(), UndoLogMode.COMMON_LOG.getValue());
-  }
+    private TxcTable getDBTxcTable(final JdbcTemplate template, final String selectSql,
+            final TxcTable p) {
+        TxcTable t = new TxcTable();
+        t.setTableMeta(p.getTableMeta());
+        template.query(selectSql, new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                java.sql.ResultSetMetaData rsmd = rs.getMetaData();
+                int column = rsmd.getColumnCount();
+                List<TxcField> fields = new ArrayList<TxcField>(column);
+                for (int i = 1; i <= column; i++) {
+                    TxcField field = new TxcField();
+                    field.setFieldName(rsmd.getColumnName(i));
+                    field.setFieldType(rsmd.getColumnType(i));
+                    field.setFieldValue(rs.getObject(i));
+                    fields.add(field);
+                }
+
+                TxcLine line = new TxcLine();
+                line.setTableMeta(t.getTableMeta());
+                line.setFields(fields);
+                t.addLine(line);
+            }
+        });
+        return t;
+    }
+
+    private String getDeleteUndoLogSql(final List<ContextStep2> contexts) {
+        StringBuilder sb = new StringBuilder();
+        boolean flag = false;
+        for (ContextStep2 c : contexts) {
+            if (flag == true) {
+                sb.append(",");
+            } else {
+                flag = true;
+            }
+            sb.append(c.getGlobalXid());
+        }
+
+        return String.format("delete from %s where id in (%s) and status = %d", txcLogTableName,
+                sb.toString(), UndoLogMode.COMMON_LOG.getValue());
+    }
 }
