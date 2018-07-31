@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>io.dts</groupId>
+	<groupId>io.github.frostingwolf</groupId>
 	<artifactId>dts</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -27,32 +28,32 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>io.dts</groupId>
+				<groupId>io.github.frostingwolf</groupId>
 				<artifactId>dts-datasource</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.dts</groupId>
+				<groupId>io.github.frostingwolf</groupId>
 				<artifactId>dts-client</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.dts</groupId>
+				<groupId>io.github.frostingwolf</groupId>
 				<artifactId>dts-remoting</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.dts</groupId>
+				<groupId>io.github.frostingwolf</groupId>
 				<artifactId>dts-common</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.dts</groupId>
+				<groupId>io.github.frostingwolf</groupId>
 				<artifactId>dts-parser</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.dts</groupId>
+				<groupId>io.github.frostingwolf</groupId>
 				<artifactId>dts-rm</artifactId>
 				<version>${project.version}</version>
 			</dependency>
