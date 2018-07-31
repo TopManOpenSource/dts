@@ -24,43 +24,47 @@ import java.util.ServiceLoader;
  * @version DtsContext2Helper.java, v 0.0.1 2017年10月27日 下午3:24:34 liushiming
  */
 public abstract class DtsContext {
-  protected static final String TXC_XID_KEY = "XID";
-  private static List<DtsContext> contexts;
-  static {
-    contexts = load();
-  }
-
-  private static List<DtsContext> load() {
-    Iterable<DtsContext> candidates = ServiceLoader.load(DtsContext.class);
-    List<DtsContext> list = new ArrayList<DtsContext>();
-    for (DtsContext current : candidates) {
-      list.add(current);
+    protected static final String TXC_XID_KEY = "XID";
+    private static List<DtsContext> contexts;
+    static {
+        contexts = load();
     }
-    Collections.sort(list, Collections.reverseOrder(new Comparator<DtsContext>() {
-      @Override
-      public int compare(DtsContext f1, DtsContext f2) {
-        return f1.priority() - f2.priority();
-      }
-    }));
-    return Collections.unmodifiableList(list);
-  }
 
-  public static DtsContext getInstance() {
-    if (contexts == null || contexts.isEmpty()) {
-      contexts = load();
+    private static List<DtsContext> load() {
+        Iterable<DtsContext> candidates = ServiceLoader.load(DtsContext.class);
+        List<DtsContext> list = new ArrayList<DtsContext>();
+        for (DtsContext current : candidates) {
+            list.add(current);
+        }
+        Collections.sort(list, Collections.reverseOrder(new Comparator<DtsContext>() {
+            @Override
+            public int compare(DtsContext f1, DtsContext f2) {
+                return f1.priority() - f2.priority();
+            }
+        }));
+        return Collections.unmodifiableList(list);
     }
-    return contexts.get(0);
-  }
 
-  public abstract int priority();
+    public static DtsContext getInstance() {
+        if (contexts == null || contexts.isEmpty()) {
+            contexts = load();
+        }
+        if (contexts == null && contexts.size() == 0) {
+            throw new UnsupportedOperationException(
+                    "Please choose one microservice framework, Dts only support saluki or spring cloud");
+        }
+        return contexts.get(0);
+    }
 
-  public abstract String getCurrentXid();
+    public abstract int priority();
 
-  public abstract void bind(String xid);
+    public abstract String getCurrentXid();
 
-  public abstract void unbind();
+    public abstract void bind(String xid);
 
-  public abstract boolean inTxcTransaction();
+    public abstract void unbind();
+
+    public abstract boolean inTxcTransaction();
 
 
 }

@@ -14,11 +14,9 @@
 package io.dts.saluki;
 
 import java.util.Map;
-
 import com.google.common.collect.Maps;
-import com.quancheng.saluki.core.common.RpcContext;
-
 import io.dts.common.context.DtsContext;
+import io.github.saluki.common.RpcContext;
 
 /**
  * @author liushiming
@@ -26,44 +24,44 @@ import io.dts.common.context.DtsContext;
  */
 public class SalukiContext extends DtsContext {
 
-  private static final ThreadLocal<Map<String, String>> LOCAL =
-      new InheritableThreadLocal<Map<String, String>>() {
+    private static final ThreadLocal<Map<String, String>> LOCAL =
+            new InheritableThreadLocal<Map<String, String>>() {
 
-        @Override
-        protected Map<String, String> initialValue() {
-          return Maps.newHashMap();
+                @Override
+                protected Map<String, String> initialValue() {
+                    return Maps.newHashMap();
+                }
+            };
+
+    @Override
+    public String getCurrentXid() {
+        String txId = RpcContext.getContext().getAttachment(TXC_XID_KEY);
+        // 当已经Rpc调用完毕之后，整个RpcContext会被清理掉，这时候应该取本地的ThreadLocal值
+        if (txId == null) {
+            txId = LOCAL.get().get(TXC_XID_KEY);
         }
-      };
-
-  @Override
-  public String getCurrentXid() {
-    String txId = RpcContext.getContext().getAttachment(TXC_XID_KEY);
-    // 当已经Rpc调用完毕之后，整个RpcContext会被清理掉，这时候应该取本地的ThreadLocal值
-    if (txId == null) {
-      txId = LOCAL.get().get(TXC_XID_KEY);
+        return txId;
     }
-    return txId;
-  }
 
-  @Override
-  public synchronized void bind(String xid) {
-    LOCAL.get().put(TXC_XID_KEY, xid);
-    RpcContext.getContext().setAttachment(TXC_XID_KEY, xid);
-  }
+    @Override
+    public synchronized void bind(String xid) {
+        LOCAL.get().put(TXC_XID_KEY, xid);
+        RpcContext.getContext().setAttachment(TXC_XID_KEY, xid);
+    }
 
-  @Override
-  public void unbind() {
-    LOCAL.remove();
-  }
+    @Override
+    public void unbind() {
+        LOCAL.remove();
+    }
 
-  @Override
-  public boolean inTxcTransaction() {
-    return getCurrentXid() != null;
-  }
+    @Override
+    public boolean inTxcTransaction() {
+        return getCurrentXid() != null;
+    }
 
-  @Override
-  public int priority() {
-    return 0;
-  }
+    @Override
+    public int priority() {
+        return 0;
+    }
 
 }
