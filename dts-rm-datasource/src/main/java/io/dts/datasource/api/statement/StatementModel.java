@@ -3,8 +3,8 @@ package io.dts.datasource.api.statement;
 
 import java.sql.SQLException;
 
-import io.dts.datasource.api.AbstractDtsStatement;
-import io.dts.datasource.api.DtsDataSource;
+import io.dts.datasource.jdbc.AbstractDtsStatement;
+import io.dts.datasource.jdbc.DtsDataSource;
 import io.dts.parser.struct.SqlType;
 
 public final class StatementModel {

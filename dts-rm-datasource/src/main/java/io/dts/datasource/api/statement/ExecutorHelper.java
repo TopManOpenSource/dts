@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import io.dts.common.context.DtsContext;
 import io.dts.common.exception.DtsException;
-import io.dts.datasource.api.DtsConnection;
+import io.dts.datasource.jdbc.DtsConnection;
 import io.dts.parser.DtsVisitorFactory;
 import io.dts.parser.struct.RollbackInfor;
 import io.dts.parser.struct.TxcTable;

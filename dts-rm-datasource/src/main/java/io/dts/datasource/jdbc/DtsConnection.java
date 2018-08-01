@@ -1,4 +1,4 @@
-package io.dts.datasource.api;
+package io.dts.datasource.jdbc;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -8,8 +8,8 @@ import java.sql.Statement;
 
 import io.dts.common.context.DtsContext;
 import io.dts.common.context.DtsXID;
-import io.dts.datasource.UndoLogMode;
 import io.dts.datasource.logging.DtsLogManager;
+import io.dts.datasource.struct.UndoLogMode;
 import io.dts.parser.struct.TxcRuntimeContext;
 
 public class DtsConnection extends AbstractDtsConnection {

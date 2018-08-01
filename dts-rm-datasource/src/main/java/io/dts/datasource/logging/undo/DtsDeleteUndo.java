@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import io.dts.parser.struct.RollbackInfor;
 import io.dts.parser.struct.TxcField;
 
-public class DtsDeleteUndo extends AbstractDtsUndo {
+public class DtsDeleteUndo extends DtsUndo {
 
     public DtsDeleteUndo(RollbackInfor txcUndoLogRollbackInfor) {
         super(txcUndoLogRollbackInfor);

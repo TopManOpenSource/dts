@@ -15,21 +15,40 @@ package io.dts.datasource.logging;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
 import org.springframework.jdbc.core.PreparedStatementCallback;
+
 import io.dts.common.context.DtsXID;
 import io.dts.common.util.BlobUtil;
-import io.dts.datasource.ContextStep2;
+import io.dts.datasource.struct.ContextStep2;
 import io.dts.parser.struct.TxcRuntimeContext;
 
-public interface DtsLogManager {
+public class DtsLogManager {
 
-    public static final String txcLogTableName = "dts_undo_log";
+    protected static final String txcLogTableName = "dts_undo_log";
 
-    void branchCommit(ContextStep2 context) throws SQLException;
+    private final BranchRollbackLogManager rollbackLogManager;
 
-    void branchRollback(ContextStep2 context) throws SQLException;
+    private final BranchCommitLogManager commitLogManager;
 
-    default Integer insertUndoLog(final Connection connection, final TxcRuntimeContext txcContext) throws SQLException {
+    public static DtsLogManager getInstance() {
+        return DtsLogManagerHolder.instance;
+    }
+
+    protected DtsLogManager() {
+        this.rollbackLogManager = new BranchRollbackLogManager();
+        this.commitLogManager = new BranchCommitLogManager();
+    }
+
+    public void branchCommit(ContextStep2 context) throws SQLException {
+        commitLogManager.branchCommit(context);
+    }
+
+    public void branchRollback(ContextStep2 context) throws SQLException {
+        rollbackLogManager.branchRollback(context);
+    }
+
+    public Integer insertUndoLog(final Connection connection, final TxcRuntimeContext txcContext) throws SQLException {
         String xid = txcContext.getXid();
         long branchID = txcContext.getBranchId();
         long globalXid = DtsXID.getGlobalXID(xid, branchID);
@@ -47,7 +66,7 @@ public interface DtsLogManager {
         insertSql.append("?,"); // gmt_modified
         insertSql.append(txcContext.getStatus()); // status
         insertSql.append(",?)"); // server
-        return SqlExecuteHelper.executeSql(connection, insertSql.toString(), new PreparedStatementCallback<Integer>() {
+        return LogManagerHelper.executeSql(connection, insertSql.toString(), new PreparedStatementCallback<Integer>() {
             @Override
             public Integer doInPreparedStatement(final PreparedStatement pst) throws SQLException {
                 pst.setLong(1, globalXid);
@@ -64,7 +83,7 @@ public interface DtsLogManager {
 
     }
 
-    public static DtsLogManager getInstance() {
-        return DtsLogManagerInstance.logManager;
+    private static class DtsLogManagerHolder {
+        private static DtsLogManager instance = new DtsLogManager();
     }
 }

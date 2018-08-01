@@ -7,7 +7,7 @@ import io.dts.common.protocol.ResultCode;
 import io.dts.parser.struct.RollbackInfor;
 import io.dts.parser.struct.TxcField;
 
-public class DtsUpdateUndo extends AbstractDtsUndo {
+public class DtsUpdateUndo extends DtsUndo {
 
     public DtsUpdateUndo(RollbackInfor txcUndoLogRollbackInfor) {
         super(txcUndoLogRollbackInfor);

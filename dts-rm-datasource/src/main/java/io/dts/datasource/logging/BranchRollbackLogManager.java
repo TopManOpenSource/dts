@@ -1,41 +1,35 @@
-/*
- * Copyright 2014-2017 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
- */
 package io.dts.datasource.logging;
 
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
+
 import io.dts.common.context.DtsXID;
 import io.dts.common.exception.DtsException;
 import io.dts.common.protocol.ResultCode;
-import io.dts.datasource.ContextStep2;
+import io.dts.common.util.BlobUtil;
 import io.dts.datasource.DataSourceHolder;
-import io.dts.datasource.UndoLogMode;
 import io.dts.datasource.logging.undo.DtsUndo;
+import io.dts.datasource.struct.ContextStep2;
+import io.dts.datasource.struct.UndoLogMode;
 import io.dts.parser.struct.RollbackInfor;
 import io.dts.parser.struct.TxcField;
 import io.dts.parser.struct.TxcLine;
@@ -44,19 +38,43 @@ import io.dts.parser.struct.TxcTable;
 import io.dts.parser.struct.TxcTableMeta;
 import io.dts.parser.vistor.DtsTableMetaTools;
 
-public class BranchRollbackLogManager extends DtsLogManagerInstance {
-    private static final Logger logger = LoggerFactory.getLogger(BranchRollbackLogManager.class);
+public class BranchRollbackLogManager extends DtsLogManager {
+    private static Logger logger = LoggerFactory.getLogger(BranchRollbackLogManager.class);
+
+    private TxcRuntimeContext getTxcRuntimeContexts(final long gid, final JdbcTemplate template) {
+        String sql =
+            String.format("select * from %s where status = 0 && " + "id = %d order by id desc", txcLogTableName, gid);
+        List<TxcRuntimeContext> undos = LogManagerHelper.querySql(template, new RowMapper<TxcRuntimeContext>() {
+            @Override
+            public TxcRuntimeContext mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Blob blob = rs.getBlob("rollback_info");
+                String str = BlobUtil.blob2string(blob);
+                TxcRuntimeContext undoLogInfor = TxcRuntimeContext.decode(str);
+                return undoLogInfor;
+            }
+        }, sql);
+        if (undos == null) {
+            return null;
+        }
+        if (undos.size() == 0) {
+            return null;
+        }
+        if (undos.size() > 1) {
+            throw new DtsException("check txc_undo_log, trx info duplicate");
+        }
+        return undos.get(0);
+    }
 
     @Override
     public void branchRollback(ContextStep2 context) throws SQLException {
         DataSource datasource = DataSourceHolder.getDataSource(context.getDbname());
         DataSourceTransactionManager tm = new DataSourceTransactionManager(datasource);
         TransactionTemplate transactionTemplate = new TransactionTemplate(tm);
-        final JdbcTemplate template = new JdbcTemplate(datasource);
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
+                    JdbcTemplate template = new JdbcTemplate(datasource);
                     // 查询事务日志
                     long gid = DtsXID.getGlobalXID(context.getXid(), context.getBranchId());
                     TxcRuntimeContext undolog = getTxcRuntimeContexts(gid, template);
@@ -193,4 +211,5 @@ public class BranchRollbackLogManager extends DtsLogManagerInstance {
         return String.format("delete from %s where id in (%s) and status = %d", txcLogTableName, sb.toString(),
             UndoLogMode.COMMON_LOG.getValue());
     }
+
 }

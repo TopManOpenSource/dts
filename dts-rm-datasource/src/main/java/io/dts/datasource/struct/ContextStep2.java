@@ -1,4 +1,4 @@
-package io.dts.datasource;
+package io.dts.datasource.struct;
 
 public class ContextStep2 {
     private long globalXid;

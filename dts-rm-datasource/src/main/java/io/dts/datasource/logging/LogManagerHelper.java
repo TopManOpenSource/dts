@@ -26,9 +26,9 @@ import org.springframework.jdbc.core.RowMapper;
 
 import io.dts.datasource.DataSourceHolder;
 
-public class SqlExecuteHelper {
+public class LogManagerHelper {
 
-    private static final Logger logger = LoggerFactory.getLogger(SqlExecuteHelper.class);
+    private static final Logger logger = LoggerFactory.getLogger(LogManagerHelper.class);
 
     public static void executeSql(String dbName, String sql) throws SQLException {
         if (sql == null) {

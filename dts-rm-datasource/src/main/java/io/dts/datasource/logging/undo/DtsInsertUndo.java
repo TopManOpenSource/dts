@@ -4,7 +4,7 @@ import java.util.List;
 import com.google.common.collect.Lists;
 import io.dts.parser.struct.RollbackInfor;
 
-public class DtsInsertUndo extends AbstractDtsUndo {
+public class DtsInsertUndo extends DtsUndo {
 
     public DtsInsertUndo(RollbackInfor txcUndoLogRollbackInfor) {
         super(txcUndoLogRollbackInfor);
