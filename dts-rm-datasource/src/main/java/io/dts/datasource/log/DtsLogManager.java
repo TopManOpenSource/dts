@@ -10,7 +10,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package io.dts.datasource.logging;
+package io.dts.datasource.log;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,9 +20,8 @@ import org.springframework.jdbc.core.PreparedStatementCallback;
 
 import io.dts.common.context.DtsXID;
 import io.dts.common.util.BlobUtil;
-import io.dts.datasource.logging.internal.BranchCommitLogManager;
-import io.dts.datasource.logging.internal.BranchRollbackLogManager;
-import io.dts.datasource.logging.internal.LogManagerHelper;
+import io.dts.datasource.log.internal.BranchCommitLogManager;
+import io.dts.datasource.log.internal.BranchRollbackLogManager;
 import io.dts.datasource.struct.ContextStep2;
 import io.dts.parser.struct.TxcRuntimeContext;
 

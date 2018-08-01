@@ -1,4 +1,4 @@
-package io.dts.datasource.logging.internal;
+package io.dts.datasource.log.internal;
 
 import java.sql.SQLException;
 
@@ -13,7 +13,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import io.dts.datasource.DataSourceHolder;
-import io.dts.datasource.logging.DtsLogManager;
+import io.dts.datasource.log.DtsLogManager;
 import io.dts.datasource.struct.ContextStep2;
 import io.dts.datasource.struct.UndoLogMode;
 

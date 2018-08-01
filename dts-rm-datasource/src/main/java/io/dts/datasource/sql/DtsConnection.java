@@ -8,7 +8,7 @@ import java.sql.Statement;
 
 import io.dts.common.context.DtsContext;
 import io.dts.common.context.DtsXID;
-import io.dts.datasource.logging.DtsLogManager;
+import io.dts.datasource.log.DtsLogManager;
 import io.dts.datasource.sql.internal.ConnectionAdaper;
 import io.dts.datasource.struct.UndoLogMode;
 import io.dts.parser.struct.TxcRuntimeContext;

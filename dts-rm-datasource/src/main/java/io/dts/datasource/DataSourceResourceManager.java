@@ -22,7 +22,7 @@ import io.dts.common.exception.DtsException;
 import io.dts.common.protocol.RequestMessage;
 import io.dts.common.protocol.header.RegisterMessage;
 import io.dts.common.protocol.header.RegisterResultMessage;
-import io.dts.datasource.logging.DtsLogManager;
+import io.dts.datasource.log.DtsLogManager;
 import io.dts.datasource.struct.ContextStep2;
 import io.dts.remoting.RemoteConstant;
 import io.dts.resourcemanager.DefaultDtsResourcMessageSender;
