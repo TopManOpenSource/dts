@@ -10,7 +10,7 @@ import io.dts.common.context.DtsContext;
 import io.dts.common.context.DtsXID;
 import io.dts.datasource.log.DtsLogManager;
 import io.dts.datasource.sql.internal.ConnectionAdaper;
-import io.dts.datasource.struct.UndoLogMode;
+import io.dts.datasource.sql.model.UndoLogType;
 import io.dts.parser.struct.TxcRuntimeContext;
 
 public class DtsConnection extends ConnectionAdaper {
@@ -73,7 +73,7 @@ public class DtsConnection extends ConnectionAdaper {
             if (DtsContext.getInstance().inTxcTransaction()) {
                 // 日志写库
                 txcContext.setServer(DtsXID.getServerAddress(txcContext.getXid()));
-                txcContext.setStatus(UndoLogMode.COMMON_LOG.getValue());
+                txcContext.setStatus(UndoLogType.COMMON_LOG.getValue());
                 DtsLogManager.getInstance().insertUndoLog(this.getRawConnection(), txcContext);
                 getRawConnection().commit();
             } else {

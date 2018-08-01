@@ -1,6 +1,6 @@
-package io.dts.datasource.struct;
+package io.dts.datasource.sql.model;
 
-public class ContextStep2 {
+public class LogModel {
     private long globalXid;
     private String xid;
     private long branchId;

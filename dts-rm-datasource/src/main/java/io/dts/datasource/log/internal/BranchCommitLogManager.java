@@ -14,15 +14,15 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import io.dts.datasource.DataSourceHolder;
 import io.dts.datasource.log.DtsLogManager;
-import io.dts.datasource.struct.ContextStep2;
-import io.dts.datasource.struct.UndoLogMode;
+import io.dts.datasource.sql.model.LogModel;
+import io.dts.datasource.sql.model.UndoLogType;
 
 public class BranchCommitLogManager extends DtsLogManager {
 
     private static Logger logger = LoggerFactory.getLogger(BranchCommitLogManager.class);
 
     @Override
-    public void branchCommit(ContextStep2 context) throws SQLException {
+    public void branchCommit(LogModel context) throws SQLException {
         DataSource datasource = DataSourceHolder.getDataSource(context.getDbname());
         DataSourceTransactionManager tm = new DataSourceTransactionManager(datasource);
         TransactionTemplate transactionTemplate = new TransactionTemplate(tm);
@@ -31,7 +31,7 @@ public class BranchCommitLogManager extends DtsLogManager {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 String deleteSql = String.format("delete from %s where id in (%s) and status = %d", txcLogTableName,
-                    context.getGlobalXid(), UndoLogMode.COMMON_LOG.getValue());
+                    context.getGlobalXid(), UndoLogType.COMMON_LOG.getValue());
                 logger.info("delete undo log sql:" + deleteSql);
                 template.execute(deleteSql);
             }

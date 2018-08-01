@@ -10,13 +10,13 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package io.dts.datasource.struct;
+package io.dts.datasource.sql.model;
 
 /**
  * @author liushiming
  * @version UndoLogMode.java, v 0.0.1 2017年10月25日 下午6:31:03 liushiming
  */
-public enum UndoLogMode {
+public enum UndoLogType {
     /**
      * 正常日志
      */
@@ -42,7 +42,7 @@ public enum UndoLogMode {
      */
     TABLE_MATA(9001);
 
-    private UndoLogMode(int value) {
+    private UndoLogType(int value) {
         this.value = value;
     }
 

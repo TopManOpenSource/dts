@@ -23,7 +23,7 @@ import io.dts.common.protocol.RequestMessage;
 import io.dts.common.protocol.header.RegisterMessage;
 import io.dts.common.protocol.header.RegisterResultMessage;
 import io.dts.datasource.log.DtsLogManager;
-import io.dts.datasource.struct.ContextStep2;
+import io.dts.datasource.sql.model.LogModel;
 import io.dts.remoting.RemoteConstant;
 import io.dts.resourcemanager.DefaultDtsResourcMessageSender;
 import io.dts.resourcemanager.ResourceManager;
@@ -82,7 +82,7 @@ public class DataSourceResourceManager implements ResourceManager {
     @Override
     public void branchCommit(String xid, long branchId, String resouceInfo) throws DtsException {
         try {
-            ContextStep2 context = new ContextStep2();
+            LogModel context = new LogModel();
             context.setXid(xid);
             context.setBranchId(branchId);
             context.setDbname(resouceInfo);
@@ -97,7 +97,7 @@ public class DataSourceResourceManager implements ResourceManager {
 
     @Override
     public void branchRollback(String xid, long branchId, String resouceInfo) throws DtsException {
-        ContextStep2 context = new ContextStep2();
+        LogModel context = new LogModel();
         context.setXid(xid);
         context.setBranchId(branchId);
         context.setDbname(resouceInfo);

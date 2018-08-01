@@ -22,7 +22,7 @@ import io.dts.common.context.DtsXID;
 import io.dts.common.util.BlobUtil;
 import io.dts.datasource.log.internal.BranchCommitLogManager;
 import io.dts.datasource.log.internal.BranchRollbackLogManager;
-import io.dts.datasource.struct.ContextStep2;
+import io.dts.datasource.sql.model.LogModel;
 import io.dts.parser.struct.TxcRuntimeContext;
 
 public class DtsLogManager {
@@ -46,11 +46,11 @@ public class DtsLogManager {
         return DtsLogManagerHolder.instance;
     }
 
-    public void branchCommit(ContextStep2 context) throws SQLException {
+    public void branchCommit(LogModel context) throws SQLException {
         commitLogManager.branchCommit(context);
     }
 
-    public void branchRollback(ContextStep2 context) throws SQLException {
+    public void branchRollback(LogModel context) throws SQLException {
         rollbackLogManager.branchRollback(context);
     }
 

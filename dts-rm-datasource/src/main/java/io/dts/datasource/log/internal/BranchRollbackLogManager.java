@@ -30,8 +30,8 @@ import io.dts.datasource.DataSourceHolder;
 import io.dts.datasource.log.DtsLogManager;
 import io.dts.datasource.log.LogManagerHelper;
 import io.dts.datasource.log.internal.undo.DtsUndo;
-import io.dts.datasource.struct.ContextStep2;
-import io.dts.datasource.struct.UndoLogMode;
+import io.dts.datasource.sql.model.LogModel;
+import io.dts.datasource.sql.model.UndoLogType;
 import io.dts.parser.struct.RollbackInfor;
 import io.dts.parser.struct.TxcField;
 import io.dts.parser.struct.TxcLine;
@@ -68,7 +68,7 @@ public class BranchRollbackLogManager extends DtsLogManager {
     }
 
     @Override
-    public void branchRollback(ContextStep2 context) throws SQLException {
+    public void branchRollback(LogModel context) throws SQLException {
         DataSource datasource = DataSourceHolder.getDataSource(context.getDbname());
         DataSourceTransactionManager tm = new DataSourceTransactionManager(datasource);
         TransactionTemplate transactionTemplate = new TransactionTemplate(tm);
@@ -198,10 +198,10 @@ public class BranchRollbackLogManager extends DtsLogManager {
         return t;
     }
 
-    private String getDeleteUndoLogSql(final List<ContextStep2> contexts) {
+    private String getDeleteUndoLogSql(final List<LogModel> contexts) {
         StringBuilder sb = new StringBuilder();
         boolean flag = false;
-        for (ContextStep2 c : contexts) {
+        for (LogModel c : contexts) {
             if (flag == true) {
                 sb.append(",");
             } else {
@@ -211,7 +211,7 @@ public class BranchRollbackLogManager extends DtsLogManager {
         }
 
         return String.format("delete from %s where id in (%s) and status = %d", txcLogTableName, sb.toString(),
-            UndoLogMode.COMMON_LOG.getValue());
+            UndoLogType.COMMON_LOG.getValue());
     }
 
 }
