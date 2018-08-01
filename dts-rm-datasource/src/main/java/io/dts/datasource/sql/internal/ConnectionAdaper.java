@@ -18,7 +18,7 @@ import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
-import io.dts.parser.struct.TxcRuntimeContext;
+import io.dts.datasource.parser.struct.TxcRuntimeContext;
 
 public abstract class ConnectionAdaper implements Connection {
     protected abstract Connection getRawConnection() throws SQLException;

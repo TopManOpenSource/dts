@@ -17,6 +17,7 @@ import org.apache.rocketmq.client.producer.LocalTransactionState;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import io.dts.common.api.DtsClientMessageSender;
 import io.dts.common.context.DtsContext;
 import io.dts.common.context.DtsXID;
@@ -24,13 +25,12 @@ import io.dts.common.exception.DtsException;
 import io.dts.common.protocol.header.RegisterMessage;
 import io.dts.common.protocol.header.RegisterResultMessage;
 import io.dts.remoting.RemoteConstant;
-import io.dts.resourcemanager.DataSourceResourceManager;
+import io.dts.resourcemanager.DefaultDtsResourcMessageSender;
 import io.dts.resourcemanager.ResourceManager;
-import io.dts.resourcemanager.network.DefaultDtsResourcMessageSender;
 
 public class RocketMQResourceManager implements ResourceManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataSourceResourceManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(RocketMQResourceManager.class);
 
     private static ResourceManager resourceManager = new RocketMQResourceManager();
 

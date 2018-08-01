@@ -10,10 +10,10 @@ import org.slf4j.LoggerFactory;
 import io.dts.common.context.DtsContext;
 import io.dts.common.exception.DtsException;
 import io.dts.datasource.sql.DtsConnection;
-import io.dts.parser.DtsVisitorFactory;
-import io.dts.parser.struct.RollbackInfor;
-import io.dts.parser.struct.TxcTable;
-import io.dts.parser.vistor.ITxcVisitor;
+import io.dts.datasource.parser.DtsVisitorFactory;
+import io.dts.datasource.parser.struct.RollbackInfor;
+import io.dts.datasource.parser.struct.TxcTable;
+import io.dts.datasource.parser.vistor.ITxcVisitor;
 
 public abstract class AbstractExecutor {
 

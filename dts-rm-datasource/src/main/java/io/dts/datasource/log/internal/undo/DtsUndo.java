@@ -3,11 +3,11 @@ package io.dts.datasource.log.internal.undo;
 import java.util.List;
 
 import io.dts.common.exception.DtsException;
-import io.dts.parser.DtsObjectWapper;
-import io.dts.parser.struct.RollbackInfor;
-import io.dts.parser.struct.TxcField;
-import io.dts.parser.struct.TxcLine;
-import io.dts.parser.struct.TxcTable;
+import io.dts.datasource.parser.DtsObjectWapper;
+import io.dts.datasource.parser.struct.RollbackInfor;
+import io.dts.datasource.parser.struct.TxcField;
+import io.dts.datasource.parser.struct.TxcLine;
+import io.dts.datasource.parser.struct.TxcTable;
 
 public abstract class DtsUndo {
 

@@ -12,11 +12,10 @@
 		<module>dts-client</module>
 		<module>dts-server</module>
 		<module>dts-remoting</module>
-		<module>dts-parser</module>
-		<module>dts-rm-rocketmq</module>
 		<module>dts-rm</module>
-		<module>dts-microservice</module>
 		<module>dts-rm-datasource</module>
+		<module>dts-rm-rocketmq</module>
+		<module>dts-microservice</module>
 	</modules>
 	<properties>
 		<java_source_version>1.8</java_source_version>
@@ -27,11 +26,6 @@
 	</properties>
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>io.github.frostingwolf</groupId>
-				<artifactId>dts-datasource</artifactId>
-				<version>${project.version}</version>
-			</dependency>
 			<dependency>
 				<groupId>io.github.frostingwolf</groupId>
 				<artifactId>dts-client</artifactId>
@@ -49,12 +43,17 @@
 			</dependency>
 			<dependency>
 				<groupId>io.github.frostingwolf</groupId>
-				<artifactId>dts-parser</artifactId>
+				<artifactId>dts-rm</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.github.frostingwolf</groupId>
-				<artifactId>dts-rm</artifactId>
+				<artifactId>dts-rm-datasource</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.github.frostingwolf</groupId>
+				<artifactId>dts-rm-rocketmq</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

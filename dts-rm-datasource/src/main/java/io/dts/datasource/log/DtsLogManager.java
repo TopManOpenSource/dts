@@ -23,7 +23,7 @@ import io.dts.common.util.BlobUtil;
 import io.dts.datasource.log.internal.BranchCommitLogManager;
 import io.dts.datasource.log.internal.BranchRollbackLogManager;
 import io.dts.datasource.sql.model.LogModel;
-import io.dts.parser.struct.TxcRuntimeContext;
+import io.dts.datasource.parser.struct.TxcRuntimeContext;
 
 public class DtsLogManager {
 

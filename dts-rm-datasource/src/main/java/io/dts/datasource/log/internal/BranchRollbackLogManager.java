@@ -32,13 +32,13 @@ import io.dts.datasource.log.LogManagerHelper;
 import io.dts.datasource.log.internal.undo.DtsUndo;
 import io.dts.datasource.sql.model.LogModel;
 import io.dts.datasource.sql.model.UndoLogType;
-import io.dts.parser.struct.RollbackInfor;
-import io.dts.parser.struct.TxcField;
-import io.dts.parser.struct.TxcLine;
-import io.dts.parser.struct.TxcRuntimeContext;
-import io.dts.parser.struct.TxcTable;
-import io.dts.parser.struct.TxcTableMeta;
-import io.dts.parser.vistor.DtsTableMetaTools;
+import io.dts.datasource.parser.struct.RollbackInfor;
+import io.dts.datasource.parser.struct.TxcField;
+import io.dts.datasource.parser.struct.TxcLine;
+import io.dts.datasource.parser.struct.TxcRuntimeContext;
+import io.dts.datasource.parser.struct.TxcTable;
+import io.dts.datasource.parser.struct.TxcTableMeta;
+import io.dts.datasource.parser.vistor.DtsTableMetaTools;
 
 public class BranchRollbackLogManager extends DtsLogManager {
     private static Logger logger = LoggerFactory.getLogger(BranchRollbackLogManager.class);

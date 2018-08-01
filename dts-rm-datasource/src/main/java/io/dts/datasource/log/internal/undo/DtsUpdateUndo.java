@@ -4,8 +4,8 @@ import java.util.List;
 import com.google.common.collect.Lists;
 import io.dts.common.exception.DtsException;
 import io.dts.common.protocol.ResultCode;
-import io.dts.parser.struct.RollbackInfor;
-import io.dts.parser.struct.TxcField;
+import io.dts.datasource.parser.struct.RollbackInfor;
+import io.dts.datasource.parser.struct.TxcField;
 
 public class DtsUpdateUndo extends DtsUndo {
 

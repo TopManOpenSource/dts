@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 import io.dts.datasource.sql.DtsDataSource;
 import io.dts.datasource.sql.internal.StatementAdaper;
-import io.dts.parser.struct.SqlType;
+import io.dts.datasource.parser.struct.SqlType;
 
 public final class StatementHelper {
 

@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
-import io.dts.parser.struct.DatabaseType;
+import io.dts.datasource.parser.struct.DatabaseType;
 
 public abstract class DataSourceAdaper implements DataSource {
     protected abstract DataSource getRawDataSource() throws SQLException;
