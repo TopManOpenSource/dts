@@ -1,4 +1,4 @@
-package io.dts.datasource.logging.undo;
+package io.dts.datasource.logging.internal.undo;
 
 import java.util.List;
 

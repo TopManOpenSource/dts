@@ -1,4 +1,4 @@
-package io.dts.datasource.jdbcwapper;
+package io.dts.datasource.sql.internal;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -6,9 +6,10 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 
-import io.dts.datasource.api.statement.StatementModel;
+import io.dts.datasource.sql.DtsConnection;
+import io.dts.datasource.sql.internal.helper.StatementHelper;
 
-public abstract class AbstractDtsStatement implements Statement {
+public abstract class StatementAdaper implements Statement {
 
     protected String targetSql;
 
@@ -16,13 +17,13 @@ public abstract class AbstractDtsStatement implements Statement {
 
     private final Statement statement;
 
-    AbstractDtsStatement(final DtsConnection dtsConnection, final Statement statement) {
+    public StatementAdaper(final DtsConnection dtsConnection, final Statement statement) {
         this.dtsConnection = dtsConnection;
         this.statement = statement;
     }
 
-    protected StatementModel createStatementModel(final String sql) throws SQLException {
-        return new StatementModel(dtsConnection.getDataSource(), AbstractDtsStatement.this, sql);
+    protected StatementHelper createStatementHelper(final String sql) throws SQLException {
+        return new StatementHelper(dtsConnection.getDataSource(), StatementAdaper.this, sql);
     }
 
     public DtsConnection getDtsConnection() {
@@ -198,5 +199,7 @@ public abstract class AbstractDtsStatement implements Statement {
     public boolean isCloseOnCompletion() throws SQLException {
         throw new UnsupportedOperationException();
     }
+
+    static class StatementModel {}
 
 }

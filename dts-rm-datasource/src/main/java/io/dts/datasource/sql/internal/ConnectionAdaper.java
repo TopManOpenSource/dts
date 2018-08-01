@@ -1,4 +1,4 @@
-package io.dts.datasource.jdbcwapper;
+package io.dts.datasource.sql.internal;
 
 import java.sql.Array;
 import java.sql.Blob;
@@ -20,7 +20,7 @@ import javax.sql.DataSource;
 
 import io.dts.parser.struct.TxcRuntimeContext;
 
-public abstract class AbstractDtsConnection implements Connection {
+public abstract class ConnectionAdaper implements Connection {
     protected abstract Connection getRawConnection() throws SQLException;
 
     protected abstract DataSource getDataSource() throws SQLException;

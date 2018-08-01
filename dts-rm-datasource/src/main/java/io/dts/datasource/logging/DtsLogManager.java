@@ -20,6 +20,9 @@ import org.springframework.jdbc.core.PreparedStatementCallback;
 
 import io.dts.common.context.DtsXID;
 import io.dts.common.util.BlobUtil;
+import io.dts.datasource.logging.internal.BranchCommitLogManager;
+import io.dts.datasource.logging.internal.BranchRollbackLogManager;
+import io.dts.datasource.logging.internal.LogManagerHelper;
 import io.dts.datasource.struct.ContextStep2;
 import io.dts.parser.struct.TxcRuntimeContext;
 

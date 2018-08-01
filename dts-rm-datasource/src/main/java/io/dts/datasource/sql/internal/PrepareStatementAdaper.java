@@ -1,4 +1,4 @@
-package io.dts.datasource.jdbcwapper;
+package io.dts.datasource.sql.internal;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -26,11 +26,13 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-public abstract class AbstractDtsPrepareStatement extends AbstractDtsStatement implements PreparedStatement {
+import io.dts.datasource.sql.DtsConnection;
+
+public abstract class PrepareStatementAdaper extends StatementAdaper implements PreparedStatement {
 
     private final List<Object> parameters;
 
-    AbstractDtsPrepareStatement(DtsConnection dtsConnection, Statement statement) {
+    public PrepareStatementAdaper(DtsConnection dtsConnection, Statement statement) {
         super(dtsConnection, statement);
         this.parameters = Lists.newArrayList();
     }

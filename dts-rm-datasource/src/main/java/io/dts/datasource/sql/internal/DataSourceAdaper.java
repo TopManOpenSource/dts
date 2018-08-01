@@ -1,4 +1,4 @@
-package io.dts.datasource.jdbcwapper;
+package io.dts.datasource.sql.internal;
 
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 
 import io.dts.parser.struct.DatabaseType;
 
-public abstract class AbstractDtsDataSource implements DataSource {
+public abstract class DataSourceAdaper implements DataSource {
     protected abstract DataSource getRawDataSource() throws SQLException;
 
     protected abstract String getDbName();

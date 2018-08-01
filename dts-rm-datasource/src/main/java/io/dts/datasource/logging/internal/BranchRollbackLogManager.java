@@ -1,4 +1,4 @@
-package io.dts.datasource.logging;
+package io.dts.datasource.logging.internal;
 
 import java.sql.Blob;
 import java.sql.Connection;
@@ -27,7 +27,8 @@ import io.dts.common.exception.DtsException;
 import io.dts.common.protocol.ResultCode;
 import io.dts.common.util.BlobUtil;
 import io.dts.datasource.DataSourceHolder;
-import io.dts.datasource.logging.undo.DtsUndo;
+import io.dts.datasource.logging.DtsLogManager;
+import io.dts.datasource.logging.internal.undo.DtsUndo;
 import io.dts.datasource.struct.ContextStep2;
 import io.dts.datasource.struct.UndoLogMode;
 import io.dts.parser.struct.RollbackInfor;

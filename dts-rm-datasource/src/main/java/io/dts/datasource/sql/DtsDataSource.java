@@ -1,4 +1,4 @@
-package io.dts.datasource.jdbcwapper;
+package io.dts.datasource.sql;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -7,10 +7,11 @@ import javax.sql.DataSource;
 
 import io.dts.datasource.DataSourceHolder;
 import io.dts.datasource.DataSourceResourceManager;
+import io.dts.datasource.sql.internal.DataSourceAdaper;
 import io.dts.parser.struct.DatabaseType;
 import io.dts.resourcemanager.ResourceManager;
 
-public class DtsDataSource extends AbstractDtsDataSource {
+public class DtsDataSource extends DataSourceAdaper {
 
     private DataSource dataSource;
 

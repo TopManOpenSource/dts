@@ -1,13 +1,14 @@
-package io.dts.datasource.jdbcwapper;
+package io.dts.datasource.sql;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import io.dts.common.context.DtsContext;
-import io.dts.datasource.api.statement.PreparedStatementExecutor;
+import io.dts.datasource.sql.internal.PrepareStatementAdaper;
+import io.dts.datasource.sql.internal.helper.PreparedStatementExecutor;
 
-public class DtsPrepareStatement extends AbstractDtsPrepareStatement {
+public class DtsPrepareStatement extends PrepareStatementAdaper {
 
     public DtsPrepareStatement(final DtsConnection dtsConnection, final PreparedStatement statement,
         String sql) {
@@ -23,7 +24,7 @@ public class DtsPrepareStatement extends AbstractDtsPrepareStatement {
     @Override
     public int executeUpdate() throws SQLException {
         try {
-            return new PreparedStatementExecutor(createStatementModel(getTargetSql()), getParameters()).executeUpdate();
+            return new PreparedStatementExecutor(createStatementHelper(getTargetSql()), getParameters()).executeUpdate();
         } catch (Exception e) {
             throw new SQLException(e);
         }
@@ -32,7 +33,7 @@ public class DtsPrepareStatement extends AbstractDtsPrepareStatement {
     @Override
     public boolean execute() throws SQLException {
         try {
-            return new PreparedStatementExecutor(createStatementModel(getTargetSql()), getParameters()).execute();
+            return new PreparedStatementExecutor(createStatementHelper(getTargetSql()), getParameters()).execute();
         } catch (Exception e) {
             throw new SQLException(e);
         }

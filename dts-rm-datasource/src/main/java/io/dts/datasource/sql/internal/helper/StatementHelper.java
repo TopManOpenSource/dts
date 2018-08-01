@@ -1,17 +1,31 @@
-package io.dts.datasource.api.statement;
+package io.dts.datasource.sql.internal.helper;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
+
+import io.dts.datasource.sql.DtsDataSource;
+import io.dts.datasource.sql.internal.StatementAdaper;
 import io.dts.parser.struct.SqlType;
 
-public class SqlTypeParser {
+public final class StatementHelper {
 
     private static final Pattern SELECT_FOR_UPDATE_PATTERN =
         Pattern.compile("^select\\s+.*\\s+for\\s+update.*$", Pattern.CASE_INSENSITIVE);
+    private final StatementAdaper statement;
 
-    public static SqlType getSqlType(String sql) throws SQLException {
+    private final DtsDataSource dataSource;
+
+    private final String sql;
+
+    public StatementHelper(DtsDataSource dataSource, StatementAdaper abstractDtsStatement, String sql) {
+        this.statement = abstractDtsStatement;
+        this.dataSource = dataSource;
+        this.sql = sql;
+    }
+
+    public SqlType getSqlType() throws SQLException {
         SqlType sqlType = null;
         String noCommentsSql = sql;
         if (sql.contains("/*")) {
@@ -36,6 +50,18 @@ public class SqlTypeParser {
                 "only select, insert, update, delete,replace,truncate,create,drop,load,merge sql is supported");
         }
         return sqlType;
+    }
+
+    public DtsDataSource getDataSource() {
+        return dataSource;
+    }
+
+    public String getSql() {
+        return sql;
+    }
+
+    public StatementAdaper getStatement() {
+        return statement;
     }
 
     private static class StringUtils {
@@ -150,5 +176,4 @@ public class SqlTypeParser {
             return buf.toString();
         }
     }
-
 }

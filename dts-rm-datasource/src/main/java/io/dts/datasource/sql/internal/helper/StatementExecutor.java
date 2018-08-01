@@ -1,5 +1,5 @@
 
-package io.dts.datasource.api.statement;
+package io.dts.datasource.sql.internal.helper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,9 +7,9 @@ import java.sql.Statement;
 
 public final class StatementExecutor extends AbstractExecutor {
 
-    private final StatementModel statementUnit;
+    private final StatementHelper statementUnit;
 
-    public StatementExecutor(StatementModel statementUnit) {
+    public StatementExecutor(StatementHelper statementUnit) {
         super();
         this.statementUnit = statementUnit;
     }
@@ -18,7 +18,7 @@ public final class StatementExecutor extends AbstractExecutor {
         return super.executeStatement(statementUnit, new ExecuteCallback<ResultSet>() {
 
             @Override
-            public ResultSet execute(final StatementModel statModel) throws Exception {
+            public ResultSet execute(final StatementHelper statModel) throws Exception {
                 return statModel.getStatement().getRawStatement().executeQuery(statModel.getSql());
             }
         });
@@ -68,7 +68,7 @@ public final class StatementExecutor extends AbstractExecutor {
         Integer results = super.executeStatement(statementUnit, new ExecuteCallback<Integer>() {
 
             @Override
-            public Integer execute(final StatementModel statModel) throws Exception {
+            public Integer execute(final StatementHelper statModel) throws Exception {
 
                 return updater.executeUpdate(statModel.getStatement().getRawStatement(), statModel.getSql());
             }
@@ -120,7 +120,7 @@ public final class StatementExecutor extends AbstractExecutor {
         Boolean result = super.executeStatement(statementUnit, new ExecuteCallback<Boolean>() {
 
             @Override
-            public Boolean execute(final StatementModel statModel) throws Exception {
+            public Boolean execute(final StatementHelper statModel) throws Exception {
                 return executor.execute(statModel.getStatement().getRawStatement(), statModel.getSql());
             }
         });
