@@ -40,10 +40,10 @@ public class DefaultDtsResourcMessageSender implements DtsClientMessageSender {
     }
 
     private static class DtsClientMessageSenderHolder {
-        private static final DtsClientMessageSender instance = new DefaultDtsResourcMessageSender();
+        private static final DefaultDtsResourcMessageSender instance = new DefaultDtsResourcMessageSender();
     }
 
-    public static final DtsClientMessageSender getInstance() {
+    public static final DefaultDtsResourcMessageSender getInstance() {
         return DtsClientMessageSenderHolder.instance;
     }
 
