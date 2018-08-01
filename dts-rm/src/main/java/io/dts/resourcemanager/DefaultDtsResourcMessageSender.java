@@ -6,7 +6,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
 import com.google.common.collect.Queues;
+
 import io.dts.common.api.DtsClientMessageSender;
 import io.dts.common.exception.DtsException;
 import io.dts.common.protocol.RequestCode;
@@ -28,7 +30,6 @@ public class DefaultDtsResourcMessageSender implements DtsClientMessageSender {
     private final RemotingClient remotingClient;
     private final ScheduledExecutorService scheduledExecutorService;
     private final NettyClientConfig nettyClientConfig;
-    private static DefaultDtsResourcMessageSender resourceManagerSender = new DefaultDtsResourcMessageSender();
     private ResourceManager rm;
 
     private DefaultDtsResourcMessageSender() {
@@ -38,8 +39,12 @@ public class DefaultDtsResourcMessageSender implements DtsClientMessageSender {
             Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl("DtsResourceManager Heartbeat"));
     }
 
-    public static final DefaultDtsResourcMessageSender getInstance() {
-        return resourceManagerSender;
+    private static class DtsClientMessageSenderHolder {
+        private static final DtsClientMessageSender instance = new DefaultDtsResourcMessageSender();
+    }
+
+    public static final DtsClientMessageSender getInstance() {
+        return DtsClientMessageSenderHolder.instance;
     }
 
     public void registerResourceManager(ResourceManager rm) {

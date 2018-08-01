@@ -14,18 +14,27 @@
 		<module>spring-cloud-dts</module>
 	</modules>
 	<packaging>pom</packaging>
+	<properties>
+		<saluki.version>1.5.8.RELEASE</saluki.version>
+		<springcloud.version>1.3.5.RELEASE</springcloud.version>
+		<springboot.version>1.5.6.RELEASE</springboot.version>
+	</properties>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>io.github.frostingwolf</groupId>
 				<artifactId>saluki-core</artifactId>
-				<version>1.5.8.RELEASE</version>
-				<scope>provided</scope>
+				<version>${saluki.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-web</artifactId>
+				<version>${springboot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-netflix-dependencies</artifactId>
-				<version>1.3.5.RELEASE</version>
+				<version>${springcloud.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
