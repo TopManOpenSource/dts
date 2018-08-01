@@ -34,13 +34,17 @@ public class DtsLogManager {
 
     private final BranchCommitLogManager commitLogManager;
 
-    public static DtsLogManager getInstance() {
-        return DtsLogManagerHolder.instance;
-    }
-
     protected DtsLogManager() {
         this.rollbackLogManager = new BranchRollbackLogManager();
         this.commitLogManager = new BranchCommitLogManager();
+    }
+
+    private static class DtsLogManagerHolder {
+        private static DtsLogManager instance = new DtsLogManager();
+    }
+
+    public static DtsLogManager getInstance() {
+        return DtsLogManagerHolder.instance;
     }
 
     public void branchCommit(ContextStep2 context) throws SQLException {
@@ -86,7 +90,4 @@ public class DtsLogManager {
 
     }
 
-    private static class DtsLogManagerHolder {
-        private static DtsLogManager instance = new DtsLogManager();
-    }
 }
