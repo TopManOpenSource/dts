@@ -7,7 +7,7 @@ import io.dts.datasource.model.RollbackInfor;
 import io.dts.datasource.model.SqlField;
 import io.dts.datasource.model.SqlLine;
 import io.dts.datasource.model.SqlTable;
-import io.dts.datasource.util.DtsObjectUtil;
+import io.dts.datasource.parser.internal.helper.DtsObjectHelper;
 
 public abstract class DtsUndo {
 
@@ -66,7 +66,7 @@ public abstract class DtsUndo {
                 appender.append(", ");
             }
 
-            appender.append(DtsObjectUtil.jsonObjectDeserialize(field.getFieldType(), field.getFieldValue()));
+            appender.append(DtsObjectHelper.jsonObjectDeserialize(field.getFieldType(), field.getFieldValue()));
         }
 
         return appender.toString();
@@ -90,7 +90,7 @@ public abstract class DtsUndo {
             appender.append(field.getFieldName());
             appender.append('`');
             appender.append(" = ");
-            appender.append(DtsObjectUtil.jsonObjectDeserialize(field.getFieldType(), field.getFieldValue()));
+            appender.append(DtsObjectHelper.jsonObjectDeserialize(field.getFieldType(), field.getFieldValue()));
         }
         return appender.toString();
     }

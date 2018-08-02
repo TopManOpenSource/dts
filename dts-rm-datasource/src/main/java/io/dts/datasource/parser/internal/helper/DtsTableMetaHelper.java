@@ -17,14 +17,14 @@ import io.dts.datasource.model.ColumnMeta;
 import io.dts.datasource.model.SqlIndex;
 import io.dts.datasource.model.SqlTableMeta;
 
-public class DtsTableMetaTools {
+public class DtsTableMetaHelper {
 
     private static long cacheSize = 1000;
     private static long expireTime = 300 * 1000;
     private final static Cache<String, SqlTableMeta> tableMetaCache = CacheBuilder.newBuilder().maximumSize(cacheSize)
         .expireAfterWrite(expireTime, TimeUnit.MILLISECONDS).softValues().build();
 
-    private static Logger logger = LoggerFactory.getLogger(DtsTableMetaTools.class);
+    private static Logger logger = LoggerFactory.getLogger(DtsTableMetaHelper.class);
 
     public static SqlTableMeta getTableMeta(final String tableName) {
         if (tableName == null || tableName.isEmpty()) {

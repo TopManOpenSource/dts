@@ -9,21 +9,23 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
+
 import io.dts.common.exception.DtsException;
-import io.dts.datasource.model.SqlModel;
-import io.dts.datasource.model.SqlType;
 import io.dts.datasource.model.ColumnMeta;
 import io.dts.datasource.model.SqlField;
 import io.dts.datasource.model.SqlLine;
+import io.dts.datasource.model.SqlModel;
 import io.dts.datasource.model.SqlTable;
 import io.dts.datasource.model.SqlTableMeta;
+import io.dts.datasource.model.SqlType;
 import io.dts.datasource.parser.SqlVisitor;
-import io.dts.datasource.parser.internal.helper.DtsTableMetaTools;
-import io.dts.datasource.util.DtsObjectUtil;
+import io.dts.datasource.parser.internal.helper.DtsObjectHelper;
+import io.dts.datasource.parser.internal.helper.DtsTableMetaHelper;
 
 public abstract class AbstractSqlVisitor extends MySqlOutputVisitor implements SqlVisitor {
 
@@ -62,7 +64,7 @@ public abstract class AbstractSqlVisitor extends MySqlOutputVisitor implements S
         }
         try {
             String tablename = getTableName();
-            tableMeta = DtsTableMetaTools.getTableMeta(connection, tablename);
+            tableMeta = DtsTableMetaHelper.getTableMeta(connection, tablename);
             tableMeta.setAlias(tableNameAlias);
         } catch (Exception e) {
             throw new DtsException(e, "getTableMeta error");
@@ -189,7 +191,7 @@ public abstract class AbstractSqlVisitor extends MySqlOutputVisitor implements S
                 }
                 appender.append(field.getFieldName());
                 appender.append("=");
-                DtsObjectUtil.appendParamMarkerObject(field.getFieldValue(), appender);
+                DtsObjectHelper.appendParamMarkerObject(field.getFieldValue(), appender);
             }
         }
     }

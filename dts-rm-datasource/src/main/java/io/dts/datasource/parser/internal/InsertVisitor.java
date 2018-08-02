@@ -6,6 +6,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
@@ -18,13 +19,14 @@ import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitorUtils;
 import com.alibaba.druid.util.JdbcUtils;
 import com.google.common.base.CharMatcher;
+
 import io.dts.common.exception.DtsException;
+import io.dts.datasource.model.ColumnMeta;
 import io.dts.datasource.model.DatabaseType;
 import io.dts.datasource.model.SqlModel;
-import io.dts.datasource.model.ColumnMeta;
 import io.dts.datasource.model.SqlTable;
 import io.dts.datasource.model.SqlTableMeta;
-import io.dts.datasource.util.DtsObjectUtil;
+import io.dts.datasource.parser.internal.helper.DtsObjectHelper;
 
 public class InsertVisitor extends AbstractSqlVisitor {
 
@@ -161,7 +163,7 @@ public class InsertVisitor extends AbstractSqlVisitor {
                 evalExpression(getSQLStatement().getDatabaseType(), itemsList.get(i), getParameters());
 
             attrName = String.format("%s.%s", tableName, attrName);
-            DtsObjectUtil.appendParamMarkerObject(attrName, valuePair.value, appender);
+            DtsObjectHelper.appendParamMarkerObject(attrName, valuePair.value, appender);
             return;
         }
     }
@@ -250,7 +252,7 @@ public class InsertVisitor extends AbstractSqlVisitor {
             ValuePair valuePair =
                 evalExpression(getSQLStatement().getDatabaseType(), itemsList.get(i), getParameters());
             attrName = String.format("%s.%s", tableName, attrName);
-            DtsObjectUtil.appendParamMarkerObject(attrName, valuePair.getValue(), appender);
+            DtsObjectHelper.appendParamMarkerObject(attrName, valuePair.getValue(), appender);
             return;
         }
     }

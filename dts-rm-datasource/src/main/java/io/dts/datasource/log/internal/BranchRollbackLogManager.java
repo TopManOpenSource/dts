@@ -38,7 +38,7 @@ import io.dts.datasource.model.SqlLine;
 import io.dts.datasource.model.SqlTable;
 import io.dts.datasource.model.SqlTableMeta;
 import io.dts.datasource.model.UndoLogType;
-import io.dts.datasource.parser.internal.helper.DtsTableMetaTools;
+import io.dts.datasource.parser.internal.helper.DtsTableMetaHelper;
 
 public class BranchRollbackLogManager extends DtsLogManager {
     private static Logger logger = LoggerFactory.getLogger(BranchRollbackLogManager.class);
@@ -90,7 +90,7 @@ public class BranchRollbackLogManager extends DtsLogManager {
                         String tablename = o.getTableName() == null ? p.getTableName() : o.getTableName();
                         SqlTableMeta tablemeta = null;
                         try {
-                            tablemeta = DtsTableMetaTools.getTableMeta(tablename);
+                            tablemeta = DtsTableMetaHelper.getTableMeta(tablename);
                         } catch (Exception e) {
                             ; // 吞掉
                         }
@@ -100,7 +100,7 @@ public class BranchRollbackLogManager extends DtsLogManager {
                             try {
                                 datasource = template.getDataSource();
                                 conn = DataSourceUtils.getConnection(datasource);
-                                tablemeta = DtsTableMetaTools.getTableMeta(conn, tablename);
+                                tablemeta = DtsTableMetaHelper.getTableMeta(conn, tablename);
                             } finally {
                                 if (conn != null) {
                                     DataSourceUtils.releaseConnection(conn, datasource);

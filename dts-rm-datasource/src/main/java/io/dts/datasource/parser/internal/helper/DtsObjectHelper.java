@@ -1,15 +1,13 @@
-package io.dts.datasource.util;
+package io.dts.datasource.parser.internal.helper;
 
 import java.util.Date;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.dts.common.exception.DtsException;
 
-public class DtsObjectUtil {
+public class DtsObjectHelper {
 
-    private DtsObjectUtil() {
-
-    }
+    private DtsObjectHelper() {}
 
     public static String jsonObjectDeserialize(int type, Object value) {
         if (value == null) {
