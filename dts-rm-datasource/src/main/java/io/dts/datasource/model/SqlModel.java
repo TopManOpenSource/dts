@@ -1,13 +1,8 @@
-package io.dts.datasource.parser;
+package io.dts.datasource.model;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
-import io.dts.datasource.parser.struct.DatabaseType;
-import io.dts.datasource.parser.struct.SqlType;
 
-/**
- * Created by guoyubo on 2017/9/23.
- */
-public class DtsSQLStatement {
+public class SqlModel {
 
     private String sql;
 
@@ -17,7 +12,7 @@ public class DtsSQLStatement {
 
     private SQLStatement sqlStatement;
 
-    public DtsSQLStatement(final String sql, final SqlType sqlType, final DatabaseType databaseType,
+    public SqlModel(final String sql, final SqlType sqlType, final DatabaseType databaseType,
         final SQLStatement sqlStatement) {
         this.sql = sql;
         this.sqlType = sqlType;

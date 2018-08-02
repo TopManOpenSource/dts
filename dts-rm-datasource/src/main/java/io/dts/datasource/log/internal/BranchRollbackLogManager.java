@@ -27,31 +27,31 @@ import io.dts.common.exception.DtsException;
 import io.dts.common.protocol.ResultCode;
 import io.dts.common.util.BlobUtil;
 import io.dts.datasource.DataSourceHolder;
+import io.dts.datasource.DatasourceRuntimeContext;
 import io.dts.datasource.log.DtsLogManager;
 import io.dts.datasource.log.LogManagerHelper;
 import io.dts.datasource.log.internal.undo.DtsUndo;
-import io.dts.datasource.sql.model.LogModel;
-import io.dts.datasource.sql.model.UndoLogType;
-import io.dts.datasource.parser.struct.RollbackInfor;
-import io.dts.datasource.parser.struct.TxcField;
-import io.dts.datasource.parser.struct.TxcLine;
-import io.dts.datasource.parser.struct.TxcRuntimeContext;
-import io.dts.datasource.parser.struct.TxcTable;
-import io.dts.datasource.parser.struct.TxcTableMeta;
-import io.dts.datasource.parser.vistor.DtsTableMetaTools;
+import io.dts.datasource.model.LogModel;
+import io.dts.datasource.model.RollbackInfor;
+import io.dts.datasource.model.SqlField;
+import io.dts.datasource.model.SqlLine;
+import io.dts.datasource.model.SqlTable;
+import io.dts.datasource.model.SqlTableMeta;
+import io.dts.datasource.model.UndoLogType;
+import io.dts.datasource.parser.internal.helper.DtsTableMetaTools;
 
 public class BranchRollbackLogManager extends DtsLogManager {
     private static Logger logger = LoggerFactory.getLogger(BranchRollbackLogManager.class);
 
-    private TxcRuntimeContext getTxcRuntimeContexts(final long gid, final JdbcTemplate template) {
+    private DatasourceRuntimeContext getTxcRuntimeContexts(final long gid, final JdbcTemplate template) {
         String sql =
             String.format("select * from %s where status = 0 && " + "id = %d order by id desc", txcLogTableName, gid);
-        List<TxcRuntimeContext> undos = LogManagerHelper.querySql(template, new RowMapper<TxcRuntimeContext>() {
+        List<DatasourceRuntimeContext> undos = LogManagerHelper.querySql(template, new RowMapper<DatasourceRuntimeContext>() {
             @Override
-            public TxcRuntimeContext mapRow(ResultSet rs, int rowNum) throws SQLException {
+            public DatasourceRuntimeContext mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Blob blob = rs.getBlob("rollback_info");
                 String str = BlobUtil.blob2string(blob);
-                TxcRuntimeContext undoLogInfor = TxcRuntimeContext.decode(str);
+                DatasourceRuntimeContext undoLogInfor = DatasourceRuntimeContext.decode(str);
                 return undoLogInfor;
             }
         }, sql);
@@ -79,16 +79,16 @@ public class BranchRollbackLogManager extends DtsLogManager {
                     JdbcTemplate template = new JdbcTemplate(datasource);
                     // 查询事务日志
                     long gid = DtsXID.getGlobalXID(context.getXid(), context.getBranchId());
-                    TxcRuntimeContext undolog = getTxcRuntimeContexts(gid, template);
+                    DatasourceRuntimeContext undolog = getTxcRuntimeContexts(gid, template);
                     if (undolog == null) {
                         return;
                     }
                     for (RollbackInfor info : undolog.getInfor()) {
                         // 设置表meta
-                        TxcTable o = info.getOriginalValue();
-                        TxcTable p = info.getPresentValue();
+                        SqlTable o = info.getOriginalValue();
+                        SqlTable p = info.getPresentValue();
                         String tablename = o.getTableName() == null ? p.getTableName() : o.getTableName();
-                        TxcTableMeta tablemeta = null;
+                        SqlTableMeta tablemeta = null;
                         try {
                             tablemeta = DtsTableMetaTools.getTableMeta(tablename);
                         } catch (Exception e) {
@@ -145,10 +145,10 @@ public class BranchRollbackLogManager extends DtsLogManager {
         if (logger.isDebugEnabled())
             start = System.currentTimeMillis();
         try {
-            TxcTable p = info.getPresentValue();
+            SqlTable p = info.getPresentValue();
             final String valueByLog = p.toString();
 
-            TxcTable t = getDBTxcTable(template, selectSql, p);
+            SqlTable t = getDBTxcTable(template, selectSql, p);
 
             final String valueBySql = t.toString();
 
@@ -172,24 +172,24 @@ public class BranchRollbackLogManager extends DtsLogManager {
 
     }
 
-    private TxcTable getDBTxcTable(final JdbcTemplate template, final String selectSql, final TxcTable p) {
-        TxcTable t = new TxcTable();
+    private SqlTable getDBTxcTable(final JdbcTemplate template, final String selectSql, final SqlTable p) {
+        SqlTable t = new SqlTable();
         t.setTableMeta(p.getTableMeta());
         template.query(selectSql, new RowCallbackHandler() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 java.sql.ResultSetMetaData rsmd = rs.getMetaData();
                 int column = rsmd.getColumnCount();
-                List<TxcField> fields = new ArrayList<TxcField>(column);
+                List<SqlField> fields = new ArrayList<SqlField>(column);
                 for (int i = 1; i <= column; i++) {
-                    TxcField field = new TxcField();
+                    SqlField field = new SqlField();
                     field.setFieldName(rsmd.getColumnName(i));
                     field.setFieldType(rsmd.getColumnType(i));
                     field.setFieldValue(rs.getObject(i));
                     fields.add(field);
                 }
 
-                TxcLine line = new TxcLine();
+                SqlLine line = new SqlLine();
                 line.setTableMeta(t.getTableMeta());
                 line.setFields(fields);
                 t.addLine(line);

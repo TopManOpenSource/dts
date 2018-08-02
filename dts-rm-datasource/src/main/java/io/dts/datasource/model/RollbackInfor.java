@@ -1,4 +1,4 @@
-package io.dts.datasource.parser.struct;
+package io.dts.datasource.model;
 
 import java.io.Serializable;
 
@@ -9,12 +9,12 @@ public class RollbackInfor implements Serializable, Cloneable {
     /**
      * 保存表原始值，用户构造回滚SQL
      */
-    private TxcTable originalValue = new TxcTable();
+    private SqlTable originalValue = new SqlTable();
 
     /**
      * 保存表现值，用户检查脏读
      */
-    private TxcTable presentValue = new TxcTable();
+    private SqlTable presentValue = new SqlTable();
 
     /**
      * 查询SQL，where之前的内容
@@ -75,8 +75,8 @@ public class RollbackInfor implements Serializable, Cloneable {
                 return true;
             }
 
-            TxcTable originalValue = this.getOriginalValue();
-            TxcTable presentValue = this.getPresentValue();
+            SqlTable originalValue = this.getOriginalValue();
+            SqlTable presentValue = this.getPresentValue();
 
             if (originalValue.getLinesNum() != presentValue.getLinesNum()) {
                 throw new RuntimeException(SqlType.UPDATE
@@ -87,11 +87,11 @@ public class RollbackInfor implements Serializable, Cloneable {
         return bRet;
     }
 
-    public TxcTable getOriginalValue() {
+    public SqlTable getOriginalValue() {
         return originalValue;
     }
 
-    public void setOriginalValue(TxcTable originalValue) {
+    public void setOriginalValue(SqlTable originalValue) {
         this.originalValue = originalValue;
     }
 
@@ -103,11 +103,11 @@ public class RollbackInfor implements Serializable, Cloneable {
         this.rollbackRule = rollbackRule;
     }
 
-    public TxcTable getPresentValue() {
+    public SqlTable getPresentValue() {
         return presentValue;
     }
 
-    public void setPresentValue(TxcTable presentValue) {
+    public void setPresentValue(SqlTable presentValue) {
         this.presentValue = presentValue;
     }
 

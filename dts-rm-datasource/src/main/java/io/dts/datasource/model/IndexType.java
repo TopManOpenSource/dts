@@ -1,4 +1,4 @@
-package io.dts.datasource.parser.struct;
+package io.dts.datasource.model;
 
 public enum IndexType {
     /** */

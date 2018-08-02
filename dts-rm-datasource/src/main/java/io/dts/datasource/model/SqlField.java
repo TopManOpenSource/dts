@@ -1,13 +1,8 @@
-package io.dts.datasource.parser.struct;
+package io.dts.datasource.model;
 
 import com.alibaba.fastjson.JSON;
 
-/**
- * 对数据库一个属性字段的描述
- * 
- * @author xiaoyan
- */
-public class TxcField {
+public class SqlField {
     /**
      * 属性名
      */
@@ -26,7 +21,7 @@ public class TxcField {
     /**
      * 默认无参构造函数
      */
-    public TxcField() {}
+    public SqlField() {}
 
     public String getFieldName() {
         return name;

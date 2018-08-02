@@ -4,8 +4,8 @@ import java.util.List;
 import com.google.common.collect.Lists;
 import io.dts.common.exception.DtsException;
 import io.dts.common.protocol.ResultCode;
-import io.dts.datasource.parser.struct.RollbackInfor;
-import io.dts.datasource.parser.struct.TxcField;
+import io.dts.datasource.model.RollbackInfor;
+import io.dts.datasource.model.SqlField;
 
 public class DtsUpdateUndo extends DtsUndo {
 
@@ -33,7 +33,7 @@ public class DtsUpdateUndo extends DtsUndo {
             // 得到行的所有属性
             String tableName = getOriginalValue().getTableMeta().getTableName();
             String pkName = getOriginalValue().getTableMeta().getPkName();
-            List<TxcField> fields = getOriginalValue().getLines().get(index).getFields();
+            List<SqlField> fields = getOriginalValue().getLines().get(index).getFields();
 
             StringBuilder sqlAppender = new StringBuilder();
             sqlAppender.append("UPDATE ");

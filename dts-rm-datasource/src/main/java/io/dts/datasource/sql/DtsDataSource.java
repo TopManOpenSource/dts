@@ -7,8 +7,8 @@ import javax.sql.DataSource;
 
 import io.dts.datasource.DataSourceHolder;
 import io.dts.datasource.DataSourceResourceManager;
+import io.dts.datasource.model.DatabaseType;
 import io.dts.datasource.sql.internal.DataSourceAdaper;
-import io.dts.datasource.parser.struct.DatabaseType;
 import io.dts.resourcemanager.ResourceManager;
 
 public class DtsDataSource extends DataSourceAdaper {

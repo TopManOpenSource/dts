@@ -18,14 +18,14 @@ import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
-import io.dts.datasource.parser.struct.TxcRuntimeContext;
+import io.dts.datasource.DatasourceRuntimeContext;
 
 public abstract class ConnectionAdaper implements Connection {
     protected abstract Connection getRawConnection() throws SQLException;
 
     protected abstract DataSource getDataSource() throws SQLException;
 
-    protected abstract TxcRuntimeContext getTxcContext();
+    protected abstract DatasourceRuntimeContext getTxcContext();
 
     @Override
     public void rollback(final Savepoint savepoint) throws SQLException {

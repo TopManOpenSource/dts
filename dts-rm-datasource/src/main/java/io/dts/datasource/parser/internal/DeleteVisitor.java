@@ -1,17 +1,18 @@
-package io.dts.datasource.parser.vistor.mysql;
+package io.dts.datasource.parser.internal;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlDeleteStatement;
-import io.dts.datasource.parser.DtsSQLStatement;
-import io.dts.datasource.parser.struct.TxcTable;
-import io.dts.datasource.parser.struct.TxcTableMeta;
 
-public class DtsDeleteVisitor extends AbstractDtsVisitor {
+import io.dts.datasource.model.SqlModel;
+import io.dts.datasource.model.SqlTable;
+import io.dts.datasource.model.SqlTableMeta;
 
-    public DtsDeleteVisitor(DtsSQLStatement node, List<Object> parameterSet) {
+public class DeleteVisitor extends AbstractSqlVisitor {
+
+    public DeleteVisitor(SqlModel node, List<Object> parameterSet) {
         super(node, parameterSet);
     }
 
@@ -23,11 +24,11 @@ public class DtsDeleteVisitor extends AbstractDtsVisitor {
     }
 
     @Override
-    public TxcTable executeAndGetFrontImage(Statement st) throws SQLException {
+    public SqlTable executeAndGetFrontImage(Statement st) throws SQLException {
         String sql = getSelectSql() + getWhereCondition(st) + " FOR UPDATE";
 
-        TxcTable tableOriginalValue = getTableOriginalValue();
-        TxcTableMeta tableMeta = getTableMeta();
+        SqlTable tableOriginalValue = getTableOriginalValue();
+        SqlTableMeta tableMeta = getTableMeta();
 
         tableOriginalValue.setTableMeta(tableMeta);
         tableOriginalValue.setTableName(tableMeta.getTableName());
@@ -38,11 +39,11 @@ public class DtsDeleteVisitor extends AbstractDtsVisitor {
     }
 
     @Override
-    public TxcTable executeAndGetRearImage(Statement st) throws SQLException {
+    public SqlTable executeAndGetRearImage(Statement st) throws SQLException {
         // SQL执行后查询DB行现值，用户脏读检查
         // 删除后，数据库已没有满足条件的数据，不需操作
-        TxcTableMeta tableMeta = getTableMeta();
-        TxcTable tablePresentValue = getTablePresentValue();
+        SqlTableMeta tableMeta = getTableMeta();
+        SqlTable tablePresentValue = getTablePresentValue();
         tablePresentValue.setTableMeta(tableMeta);
         tablePresentValue.setTableName(tableMeta.getTableName());
         tablePresentValue.setAlias(tableMeta.getAlias());

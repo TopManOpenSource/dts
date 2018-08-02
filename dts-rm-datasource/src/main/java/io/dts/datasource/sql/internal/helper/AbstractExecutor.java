@@ -10,10 +10,10 @@ import org.slf4j.LoggerFactory;
 import io.dts.common.context.DtsContext;
 import io.dts.common.exception.DtsException;
 import io.dts.datasource.sql.DtsConnection;
+import io.dts.datasource.model.RollbackInfor;
+import io.dts.datasource.model.SqlTable;
 import io.dts.datasource.parser.DtsVisitorFactory;
-import io.dts.datasource.parser.struct.RollbackInfor;
-import io.dts.datasource.parser.struct.TxcTable;
-import io.dts.datasource.parser.vistor.ITxcVisitor;
+import io.dts.datasource.parser.SqlVisitor;
 
 public abstract class AbstractExecutor {
 
@@ -57,7 +57,7 @@ public abstract class AbstractExecutor {
     private static class ExecutorRunner {
         private static final Logger logger = LoggerFactory.getLogger(ExecutorRunner.class);
 
-        private ITxcVisitor txcVisitor;
+        private SqlVisitor txcVisitor;
 
         private StatementHelper stateModel;
 
@@ -69,11 +69,11 @@ public abstract class AbstractExecutor {
 
         }
 
-        public TxcTable beforeExecute() throws SQLException {
+        public SqlTable beforeExecute() throws SQLException {
             if (!DtsContext.getInstance().inTxcTransaction()) {
                 return null;
             }
-            TxcTable nRet = null;
+            SqlTable nRet = null;
             switch (stateModel.getSqlType()) {
                 case DELETE:
                 case UPDATE:
@@ -87,12 +87,12 @@ public abstract class AbstractExecutor {
             return nRet;
         }
 
-        public TxcTable afterExecute() throws SQLException {
+        public SqlTable afterExecute() throws SQLException {
             if (!DtsContext.getInstance().inTxcTransaction()) {
                 return null;
             }
 
-            TxcTable nRet = null;
+            SqlTable nRet = null;
             switch (stateModel.getSqlType()) {
                 case DELETE:
                 case UPDATE:

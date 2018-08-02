@@ -3,11 +3,11 @@ package io.dts.datasource.log.internal.undo;
 import java.util.List;
 
 import io.dts.common.exception.DtsException;
-import io.dts.datasource.parser.DtsObjectWapper;
-import io.dts.datasource.parser.struct.RollbackInfor;
-import io.dts.datasource.parser.struct.TxcField;
-import io.dts.datasource.parser.struct.TxcLine;
-import io.dts.datasource.parser.struct.TxcTable;
+import io.dts.datasource.model.RollbackInfor;
+import io.dts.datasource.model.SqlField;
+import io.dts.datasource.model.SqlLine;
+import io.dts.datasource.model.SqlTable;
+import io.dts.datasource.util.DtsObjectUtil;
 
 public abstract class DtsUndo {
 
@@ -36,11 +36,11 @@ public abstract class DtsUndo {
         this.txcUndoLogRollbackInfor = txcUndoLogRollbackInfor;
     }
 
-    protected String fieldNamesSerialization(List<TxcField> fields) {
+    protected String fieldNamesSerialization(List<SqlField> fields) {
         StringBuilder appender = new StringBuilder();
         boolean bAndFlag = true;
         for (int i = 0; i < fields.size(); i++) {
-            TxcField field = fields.get(i);
+            SqlField field = fields.get(i);
             if (bAndFlag) {
                 bAndFlag = false;
             } else {
@@ -54,11 +54,11 @@ public abstract class DtsUndo {
         return appender.toString();
     }
 
-    protected String fieldsValueSerialization(List<TxcField> fields) {
+    protected String fieldsValueSerialization(List<SqlField> fields) {
         StringBuilder appender = new StringBuilder();
         boolean bStokFlag = true;
         for (int i = 0; i < fields.size(); i++) {
-            TxcField field = fields.get(i);
+            SqlField field = fields.get(i);
 
             if (bStokFlag) {
                 bStokFlag = false;
@@ -66,7 +66,7 @@ public abstract class DtsUndo {
                 appender.append(", ");
             }
 
-            appender.append(DtsObjectWapper.jsonObjectDeserialize(field.getFieldType(), field.getFieldValue()));
+            appender.append(DtsObjectUtil.jsonObjectDeserialize(field.getFieldType(), field.getFieldValue()));
         }
 
         return appender.toString();
@@ -74,10 +74,10 @@ public abstract class DtsUndo {
 
     public abstract List<String> buildRollbackSql();
 
-    protected String fieldsExpressionSerialization(List<TxcField> fields, String stok, String pkname, boolean onlyKey) {
+    protected String fieldsExpressionSerialization(List<SqlField> fields, String stok, String pkname, boolean onlyKey) {
         StringBuilder appender = new StringBuilder();
         boolean bStokFlag = true;
-        for (TxcField field : fields) {
+        for (SqlField field : fields) {
             if (onlyKey && field.isKey(pkname) == false) {
                 continue;
             }
@@ -90,16 +90,16 @@ public abstract class DtsUndo {
             appender.append(field.getFieldName());
             appender.append('`');
             appender.append(" = ");
-            appender.append(DtsObjectWapper.jsonObjectDeserialize(field.getFieldType(), field.getFieldValue()));
+            appender.append(DtsObjectUtil.jsonObjectDeserialize(field.getFieldType(), field.getFieldValue()));
         }
         return appender.toString();
     }
 
-    protected String linesExpressionSerialization(List<TxcLine> lines, String pkname, boolean onlyKey) {
+    protected String linesExpressionSerialization(List<SqlLine> lines, String pkname, boolean onlyKey) {
         StringBuilder appender = new StringBuilder();
         boolean bOrFlag = true;
         for (int index = 0; index < lines.size(); index++) {
-            TxcLine line = lines.get(index);
+            SqlLine line = lines.get(index);
 
             if (bOrFlag) {
                 bOrFlag = false;
@@ -117,11 +117,11 @@ public abstract class DtsUndo {
         return txcUndoLogRollbackInfor;
     }
 
-    public TxcTable getOriginalValue() {
+    public SqlTable getOriginalValue() {
         return txcUndoLogRollbackInfor.getOriginalValue();
     }
 
-    public TxcTable getPresentValue() {
+    public SqlTable getPresentValue() {
         return txcUndoLogRollbackInfor.getPresentValue();
     }
 }

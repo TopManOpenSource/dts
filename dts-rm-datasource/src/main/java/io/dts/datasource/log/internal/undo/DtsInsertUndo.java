@@ -2,7 +2,8 @@ package io.dts.datasource.log.internal.undo;
 
 import java.util.List;
 import com.google.common.collect.Lists;
-import io.dts.datasource.parser.struct.RollbackInfor;
+
+import io.dts.datasource.model.RollbackInfor;
 
 public class DtsInsertUndo extends DtsUndo {
 

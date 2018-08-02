@@ -9,7 +9,7 @@
  * specific language governing permissions and limitations under the License. </p>
  */
 
-package io.dts.datasource.parser.struct;
+package io.dts.datasource.model;
 
 public enum MySQLKeyword {
 

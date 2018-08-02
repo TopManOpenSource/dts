@@ -9,43 +9,44 @@
  * specific language governing permissions and limitations under the License. </p>
  */
 
-package io.dts.datasource.parser.vistor;
+package io.dts.datasource.parser;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import io.dts.datasource.parser.DtsSQLStatement;
-import io.dts.datasource.parser.struct.SqlType;
-import io.dts.datasource.parser.struct.TxcTable;
-import io.dts.datasource.parser.struct.TxcTableMeta;
+
+import io.dts.datasource.model.SqlModel;
+import io.dts.datasource.model.SqlType;
+import io.dts.datasource.model.SqlTable;
+import io.dts.datasource.model.SqlTableMeta;
 
 /**
  * SQL解析基础访问器接口.
  * 
  */
-public interface ITxcVisitor {
+public interface SqlVisitor {
 
     void setConnection(Connection connection);
 
-    TxcTableMeta buildTableMeta() throws SQLException;
+    SqlTableMeta buildTableMeta() throws SQLException;
 
     /**
      * 获取前置镜像
      *
      * @throws SQLException
      */
-    TxcTable executeAndGetFrontImage(Statement st) throws SQLException;
+    SqlTable executeAndGetFrontImage(Statement st) throws SQLException;
 
-    TxcTable getTableOriginalValue() throws SQLException;
+    SqlTable getTableOriginalValue() throws SQLException;
 
     /**
      * 获取后置镜像
      *
      * @throws SQLException
      */
-    TxcTable executeAndGetRearImage(Statement st) throws SQLException;
+    SqlTable executeAndGetRearImage(Statement st) throws SQLException;
 
-    TxcTable getTablePresentValue() throws SQLException;
+    SqlTable getTablePresentValue() throws SQLException;
 
     /**
      * 获取原始数据的SQL
@@ -68,14 +69,14 @@ public interface ITxcVisitor {
      */
     String getSelectSql() throws SQLException;
 
-    String getWhereCondition(TxcTable table);
+    String getWhereCondition(SqlTable table);
 
     String getTableName() throws SQLException;
 
     SqlType getSqlType();
 
-    TxcTableMeta getTableMeta();
+    SqlTableMeta getTableMeta();
 
-    DtsSQLStatement getSQLStatement();
+    SqlModel getSQLStatement();
 
 }

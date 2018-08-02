@@ -1,4 +1,4 @@
-package io.dts.datasource.parser.struct;
+package io.dts.datasource;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -10,10 +10,11 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.dts.common.context.DtsContext;
 import io.dts.common.context.DtsXID;
+import io.dts.datasource.model.RollbackInfor;
 
-public class TxcRuntimeContext {
+public class DatasourceRuntimeContext {
 
-    private final Logger logger = LoggerFactory.getLogger(TxcRuntimeContext.class);
+    private final Logger logger = LoggerFactory.getLogger(DatasourceRuntimeContext.class);
     /**
      * 主键，自增
      */
@@ -55,7 +56,7 @@ public class TxcRuntimeContext {
     @JSONField(serialize = false)
     private long start0;
 
-    public TxcRuntimeContext() {
+    public DatasourceRuntimeContext() {
         if (logger.isDebugEnabled()) {
             start = System.currentTimeMillis();
             start0 = System.currentTimeMillis();
@@ -80,8 +81,8 @@ public class TxcRuntimeContext {
      * @param jsonString
      * @return
      */
-    public static TxcRuntimeContext decode(String jsonString) {
-        return JSON.parseObject(jsonString, TxcRuntimeContext.class);
+    public static DatasourceRuntimeContext decode(String jsonString) {
+        return JSON.parseObject(jsonString, DatasourceRuntimeContext.class);
     }
 
     public long getId() {

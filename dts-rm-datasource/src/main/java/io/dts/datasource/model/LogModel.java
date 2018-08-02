@@ -1,4 +1,4 @@
-package io.dts.datasource.sql.model;
+package io.dts.datasource.model;
 
 public class LogModel {
     private long globalXid;

@@ -1,4 +1,4 @@
-package io.dts.datasource.parser.struct;
+package io.dts.datasource.model;
 
 import java.util.Arrays;
 import com.alibaba.druid.util.JdbcUtils;

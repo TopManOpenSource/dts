@@ -20,10 +20,10 @@ import org.springframework.jdbc.core.PreparedStatementCallback;
 
 import io.dts.common.context.DtsXID;
 import io.dts.common.util.BlobUtil;
+import io.dts.datasource.DatasourceRuntimeContext;
 import io.dts.datasource.log.internal.BranchCommitLogManager;
 import io.dts.datasource.log.internal.BranchRollbackLogManager;
-import io.dts.datasource.sql.model.LogModel;
-import io.dts.datasource.parser.struct.TxcRuntimeContext;
+import io.dts.datasource.model.LogModel;
 
 public class DtsLogManager {
 
@@ -54,7 +54,7 @@ public class DtsLogManager {
         rollbackLogManager.branchRollback(context);
     }
 
-    public Integer insertUndoLog(final Connection connection, final TxcRuntimeContext txcContext) throws SQLException {
+    public Integer insertUndoLog(final Connection connection, final DatasourceRuntimeContext txcContext) throws SQLException {
         String xid = txcContext.getXid();
         long branchID = txcContext.getBranchId();
         long globalXid = DtsXID.getGlobalXID(xid, branchID);

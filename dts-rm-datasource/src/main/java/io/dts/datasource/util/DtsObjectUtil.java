@@ -1,16 +1,20 @@
-package io.dts.datasource.parser;
+package io.dts.datasource.util;
 
 import java.util.Date;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.dts.common.exception.DtsException;
 
-public class DtsObjectWapper {
+public class DtsObjectUtil {
+
+    private DtsObjectUtil() {
+
+    }
+
     public static String jsonObjectDeserialize(int type, Object value) {
         if (value == null) {
             return "null";
         }
-
         switch (type) {
             case java.sql.Types.ARRAY:
             case java.sql.Types.CHAR:
@@ -36,7 +40,6 @@ public class DtsObjectWapper {
             appender.append("null");
             return;
         }
-
         if (String.class.isAssignableFrom(value.getClass())) {
             String text = (String)value;
             appender.append("'" + text.replaceAll("'", "''") + "'");
@@ -50,7 +53,6 @@ public class DtsObjectWapper {
     }
 
     public static void appendParamMarkerObject(String name, Object value, StringBuilder appender) {
-
         appender.append(name);
         appender.append(" = ");
         if (String.class.isAssignableFrom(value.getClass())) {

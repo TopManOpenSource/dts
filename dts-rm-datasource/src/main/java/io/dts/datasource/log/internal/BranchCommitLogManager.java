@@ -14,8 +14,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import io.dts.datasource.DataSourceHolder;
 import io.dts.datasource.log.DtsLogManager;
-import io.dts.datasource.sql.model.LogModel;
-import io.dts.datasource.sql.model.UndoLogType;
+import io.dts.datasource.model.LogModel;
+import io.dts.datasource.model.UndoLogType;
 
 public class BranchCommitLogManager extends DtsLogManager {
 

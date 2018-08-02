@@ -1,40 +1,40 @@
-package io.dts.datasource.parser.struct;
+package io.dts.datasource.model;
 
 import java.util.ArrayList;
 import java.util.List;
 import com.alibaba.fastjson.annotation.JSONField;
 
-public class TxcLine {
+public class SqlLine {
     /**
      * 保存与数据库表对应的一行内容
      */
-    private List<TxcField> fields = null;
+    private List<SqlField> fields = null;
 
     @JSONField(serialize = false)
-    private TxcTableMeta tableMeta;
+    private SqlTableMeta tableMeta;
 
-    public TxcTableMeta getTableMeta() {
+    public SqlTableMeta getTableMeta() {
         return tableMeta;
     }
 
-    public void setTableMeta(TxcTableMeta tableMeta) {
+    public void setTableMeta(SqlTableMeta tableMeta) {
         this.tableMeta = tableMeta;
     }
 
-    public TxcLine() {}
+    public SqlLine() {}
 
-    public List<TxcField> getFields() {
+    public List<SqlField> getFields() {
         return fields;
     }
 
-    public void addFields(TxcField field) {
+    public void addFields(SqlField field) {
         if (fields == null) {
-            fields = new ArrayList<TxcField>();
+            fields = new ArrayList<SqlField>();
         }
         fields.add(field);
     }
 
-    public void setFields(List<TxcField> fields) {
+    public void setFields(List<SqlField> fields) {
         this.fields = fields;
     }
 

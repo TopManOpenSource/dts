@@ -2,8 +2,9 @@ package io.dts.datasource.log.internal.undo;
 
 import java.util.List;
 import com.google.common.collect.Lists;
-import io.dts.datasource.parser.struct.RollbackInfor;
-import io.dts.datasource.parser.struct.TxcField;
+
+import io.dts.datasource.model.RollbackInfor;
+import io.dts.datasource.model.SqlField;
 
 public class DtsDeleteUndo extends DtsUndo {
 
@@ -18,7 +19,7 @@ public class DtsDeleteUndo extends DtsUndo {
         for (int index = 0; index < getOriginalValue().getLinesNum(); index++) {
             // 得到行的所有属性
             String tableName = getOriginalValue().getTableMeta().getTableName();
-            List<TxcField> fields = getOriginalValue().getLines().get(index).getFields();
+            List<SqlField> fields = getOriginalValue().getLines().get(index).getFields();
             StringBuilder sqlAppender = new StringBuilder();
 
             sqlAppender.append("INSERT INTO ");

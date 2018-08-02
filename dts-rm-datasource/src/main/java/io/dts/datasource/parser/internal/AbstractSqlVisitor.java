@@ -1,4 +1,4 @@
-package io.dts.datasource.parser.vistor.mysql;
+package io.dts.datasource.parser.internal;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -14,28 +14,28 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 import io.dts.common.exception.DtsException;
-import io.dts.datasource.parser.DtsObjectWapper;
-import io.dts.datasource.parser.DtsSQLStatement;
-import io.dts.datasource.parser.struct.SqlType;
-import io.dts.datasource.parser.struct.TxcColumnMeta;
-import io.dts.datasource.parser.struct.TxcField;
-import io.dts.datasource.parser.struct.TxcLine;
-import io.dts.datasource.parser.struct.TxcTable;
-import io.dts.datasource.parser.struct.TxcTableMeta;
-import io.dts.datasource.parser.vistor.DtsTableMetaTools;
-import io.dts.datasource.parser.vistor.ITxcVisitor;
+import io.dts.datasource.model.SqlModel;
+import io.dts.datasource.model.SqlType;
+import io.dts.datasource.model.ColumnMeta;
+import io.dts.datasource.model.SqlField;
+import io.dts.datasource.model.SqlLine;
+import io.dts.datasource.model.SqlTable;
+import io.dts.datasource.model.SqlTableMeta;
+import io.dts.datasource.parser.SqlVisitor;
+import io.dts.datasource.parser.internal.helper.DtsTableMetaTools;
+import io.dts.datasource.util.DtsObjectUtil;
 
-public abstract class AbstractDtsVisitor extends MySqlOutputVisitor implements ITxcVisitor {
+public abstract class AbstractSqlVisitor extends MySqlOutputVisitor implements SqlVisitor {
 
     private String selectSql = null;
 
     private String whereCondition = null;
 
-    private TxcTableMeta tableMeta = null;// table语法树
+    private SqlTableMeta tableMeta = null;// table语法树
 
-    protected DtsSQLStatement node;
-    private final TxcTable tableOriginalValue = new TxcTable(); // 保存SQL前置镜像
-    private final TxcTable tablePresentValue = new TxcTable(); // 保存SQL后置镜像
+    protected SqlModel node;
+    private final SqlTable tableOriginalValue = new SqlTable(); // 保存SQL前置镜像
+    private final SqlTable tablePresentValue = new SqlTable(); // 保存SQL后置镜像
 
     protected Connection connection;
 
@@ -43,7 +43,7 @@ public abstract class AbstractDtsVisitor extends MySqlOutputVisitor implements I
 
     protected String tableNameAlias;
 
-    public AbstractDtsVisitor(DtsSQLStatement node, List<Object> parameterSet) {
+    public AbstractSqlVisitor(SqlModel node, List<Object> parameterSet) {
         super(new StringBuilder());
         this.node = node;
         super.setParameters(parameterSet);
@@ -56,7 +56,7 @@ public abstract class AbstractDtsVisitor extends MySqlOutputVisitor implements I
     }
 
     @Override
-    public TxcTableMeta buildTableMeta() throws SQLException {
+    public SqlTableMeta buildTableMeta() throws SQLException {
         if (tableMeta != null) {
             return tableMeta;
         }
@@ -72,17 +72,17 @@ public abstract class AbstractDtsVisitor extends MySqlOutputVisitor implements I
     }
 
     @Override
-    public TxcTable getTableOriginalValue() {
+    public SqlTable getTableOriginalValue() {
         return tableOriginalValue;
     }
 
     @Override
-    public TxcTable getTablePresentValue() {
+    public SqlTable getTablePresentValue() {
         return tablePresentValue;
     }
 
     @Override
-    public TxcTableMeta getTableMeta() {
+    public SqlTableMeta getTableMeta() {
         return tableMeta;
     }
 
@@ -115,13 +115,13 @@ public abstract class AbstractDtsVisitor extends MySqlOutputVisitor implements I
     public String printColumns() {
         StringBuilder appender = new StringBuilder();
 
-        Collection<TxcColumnMeta> list = (Collection<TxcColumnMeta>)getTableMeta().getAllColumns().values();
+        Collection<ColumnMeta> list = (Collection<ColumnMeta>)getTableMeta().getAllColumns().values();
 
         boolean isFst = true;
         for (Object obj : list) {
             if (isFst) {
                 isFst = false;
-            } else if (obj instanceof TxcColumnMeta) {
+            } else if (obj instanceof ColumnMeta) {
                 appender.append(",");
             }
             if (getTableNameAlias() != null) {
@@ -129,7 +129,7 @@ public abstract class AbstractDtsVisitor extends MySqlOutputVisitor implements I
                 appender.append(".");
             }
 
-            appender.append(((TxcColumnMeta)obj).getColumnName());
+            appender.append(((ColumnMeta)obj).getColumnName());
         }
 
         return appender.toString();
@@ -143,24 +143,24 @@ public abstract class AbstractDtsVisitor extends MySqlOutputVisitor implements I
     }
 
     @Override
-    public String getWhereCondition(TxcTable table) {
+    public String getWhereCondition(SqlTable table) {
         StringBuilder appender = new StringBuilder();
 
-        Map<String, TxcColumnMeta> tableKeys = getTableMeta().getPrimaryKeyMap();
+        Map<String, ColumnMeta> tableKeys = getTableMeta().getPrimaryKeyMap();
         if (tableKeys.size() <= 0) {
             throw new DtsException(
                 "table[" + getTableMeta().getTableName() + "] should has prikey, contact DBA please.");
         }
 
-        List<TxcLine> lines = table.getLines();
+        List<SqlLine> lines = table.getLines();
         if (lines.size() > 0) {
             appender.append(" WHERE ");
         }
 
         boolean bOrFlag = true;
         for (int i = 0; i < lines.size(); i++) {
-            TxcLine line = lines.get(i);
-            List<TxcField> fields = line.getFields();
+            SqlLine line = lines.get(i);
+            List<SqlField> fields = line.getFields();
             if (fields == null) {
                 continue;
             }
@@ -177,10 +177,10 @@ public abstract class AbstractDtsVisitor extends MySqlOutputVisitor implements I
         return appender.toString();
     }
 
-    void printKeyList(Map<String, TxcColumnMeta> tableKeys, List<TxcField> fields, StringBuilder appender) {
+    void printKeyList(Map<String, ColumnMeta> tableKeys, List<SqlField> fields, StringBuilder appender) {
         boolean bAndFlag = true;
         for (int i = 0; i < fields.size(); i++) {
-            TxcField field = fields.get(i);
+            SqlField field = fields.get(i);
             if (tableKeys.containsKey(field.getFieldName().toUpperCase())) {
                 if (bAndFlag) {
                     bAndFlag = false;
@@ -189,7 +189,7 @@ public abstract class AbstractDtsVisitor extends MySqlOutputVisitor implements I
                 }
                 appender.append(field.getFieldName());
                 appender.append("=");
-                DtsObjectWapper.appendParamMarkerObject(field.getFieldValue(), appender);
+                DtsObjectUtil.appendParamMarkerObject(field.getFieldValue(), appender);
             }
         }
     }
@@ -211,7 +211,7 @@ public abstract class AbstractDtsVisitor extends MySqlOutputVisitor implements I
     }
 
     @Override
-    public DtsSQLStatement getSQLStatement() {
+    public SqlModel getSQLStatement() {
         return this.node;
     }
 
@@ -237,10 +237,10 @@ public abstract class AbstractDtsVisitor extends MySqlOutputVisitor implements I
         return tableName;
     }
 
-    private TxcLine addLine(ResultSet rs, ResultSetMetaData rsmd, int column) throws SQLException {
-        List<TxcField> fields = new ArrayList<TxcField>(column);
+    private SqlLine addLine(ResultSet rs, ResultSetMetaData rsmd, int column) throws SQLException {
+        List<SqlField> fields = new ArrayList<SqlField>(column);
         for (int i = 1; i <= column; i++) {
-            TxcField field = new TxcField();
+            SqlField field = new SqlField();
             field.setFieldName(rsmd.getColumnName(i));
             field.setFieldType(rsmd.getColumnType(i));
             if (rsmd.getColumnTypeName(i).equals("TINYINT")) {
@@ -252,14 +252,14 @@ public abstract class AbstractDtsVisitor extends MySqlOutputVisitor implements I
             fields.add(field);
         }
 
-        TxcLine line = new TxcLine();
+        SqlLine line = new SqlLine();
         line.setTableMeta(getTableMeta());
         line.setFields(fields);
         return line;
     }
 
-    public List<TxcLine> addLines(String sql) throws SQLException {
-        List<TxcLine> txcLines = new ArrayList<>();
+    public List<SqlLine> addLines(String sql) throws SQLException {
+        List<SqlLine> txcLines = new ArrayList<>();
         Statement st = null;
         ResultSet rs = null;
         try {

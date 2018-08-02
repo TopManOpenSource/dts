@@ -1,4 +1,4 @@
-package io.dts.datasource.parser.vistor;
+package io.dts.datasource.parser.internal.helper;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -12,29 +12,29 @@ import org.slf4j.LoggerFactory;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import io.dts.common.exception.DtsException;
-import io.dts.datasource.parser.struct.IndexType;
-import io.dts.datasource.parser.struct.TxcColumnMeta;
-import io.dts.datasource.parser.struct.TxcIndex;
-import io.dts.datasource.parser.struct.TxcTableMeta;
+import io.dts.datasource.model.IndexType;
+import io.dts.datasource.model.ColumnMeta;
+import io.dts.datasource.model.SqlIndex;
+import io.dts.datasource.model.SqlTableMeta;
 
 public class DtsTableMetaTools {
 
     private static long cacheSize = 1000;
     private static long expireTime = 300 * 1000;
-    private final static Cache<String, TxcTableMeta> tableMetaCache = CacheBuilder.newBuilder().maximumSize(cacheSize)
+    private final static Cache<String, SqlTableMeta> tableMetaCache = CacheBuilder.newBuilder().maximumSize(cacheSize)
         .expireAfterWrite(expireTime, TimeUnit.MILLISECONDS).softValues().build();
 
     private static Logger logger = LoggerFactory.getLogger(DtsTableMetaTools.class);
 
-    public static TxcTableMeta getTableMeta(final String tableName) {
+    public static SqlTableMeta getTableMeta(final String tableName) {
         if (tableName == null || tableName.isEmpty()) {
             throw new DtsException("table " + tableName + " cannot fetched without tableName");
         }
-        TxcTableMeta tmeta = null;
+        SqlTableMeta tmeta = null;
         try {
-            tmeta = tableMetaCache.get(tableName, new Callable<TxcTableMeta>() {
+            tmeta = tableMetaCache.get(tableName, new Callable<SqlTableMeta>() {
                 @Override
-                public TxcTableMeta call() throws Exception {
+                public SqlTableMeta call() throws Exception {
                     return null;
                 }
             });
@@ -45,16 +45,16 @@ public class DtsTableMetaTools {
         return tmeta;
     }
 
-    public static TxcTableMeta getTableMeta(final Connection conn, final String tableName) {
+    public static SqlTableMeta getTableMeta(final Connection conn, final String tableName) {
         if (tableName == null || tableName.isEmpty()) {
             throw new DtsException("table " + tableName + " cannot fetched without tableName");
         }
 
-        TxcTableMeta tmeta = null;
+        SqlTableMeta tmeta = null;
         try {
-            tmeta = tableMetaCache.get(tableName, new Callable<TxcTableMeta>() {
+            tmeta = tableMetaCache.get(tableName, new Callable<SqlTableMeta>() {
                 @Override
-                public TxcTableMeta call() throws Exception {
+                public SqlTableMeta call() throws Exception {
                     return getTableMeta0(conn, tableName);
                 }
             });
@@ -69,8 +69,8 @@ public class DtsTableMetaTools {
         return tmeta;
     }
 
-    private static TxcTableMeta getTableMeta0(Connection conn, String tableName) {
-        TxcTableMeta tmeta = null;
+    private static SqlTableMeta getTableMeta0(Connection conn, String tableName) {
+        SqlTableMeta tmeta = null;
         try {
             tmeta = fetchSchema(conn, tableName);
         } catch (SQLException e) {
@@ -81,12 +81,12 @@ public class DtsTableMetaTools {
         return tmeta;
     }
 
-    private static TxcTableMeta fetchSchema(Connection conn, String tableName) throws SQLException {
+    private static SqlTableMeta fetchSchema(Connection conn, String tableName) throws SQLException {
         return fetchSchema0(conn, tableName);
     }
 
     @SuppressWarnings("resource")
-    private static TxcTableMeta fetchSchema0(Connection conn, String tableName) throws SQLException {
+    private static SqlTableMeta fetchSchema0(Connection conn, String tableName) throws SQLException {
         java.sql.Statement stmt = null;
         java.sql.ResultSet rs = null;
         try {
@@ -137,13 +137,13 @@ public class DtsTableMetaTools {
     // false--PRIMARY-3-1-id-A-0
     // true--aaa-3-1-roll_number-A-0
     // true--aaa-3-2-name-A-0
-    private static TxcTableMeta resultSetMetaToSchema(ResultSetMetaData rsmd, DatabaseMetaData dbmd)
+    private static SqlTableMeta resultSetMetaToSchema(ResultSetMetaData rsmd, DatabaseMetaData dbmd)
         throws SQLException {
         String tableName = rsmd.getTableName(1);
         String schemaName = rsmd.getSchemaName(1);
         String catalogName = rsmd.getCatalogName(1);
 
-        TxcTableMeta tm = new TxcTableMeta();
+        SqlTableMeta tm = new SqlTableMeta();
         tm.setTableName(tableName);
         if (schemaName == null || schemaName.isEmpty()) {
             tm.setSchemaName(catalogName);
@@ -153,7 +153,7 @@ public class DtsTableMetaTools {
 
         java.sql.ResultSet rs1 = dbmd.getColumns(catalogName, schemaName, tableName, "%");
         while (rs1.next()) {
-            TxcColumnMeta col = new TxcColumnMeta();
+            ColumnMeta col = new ColumnMeta();
             col.setTableCat(rs1.getString("TABLE_CAT"));
             col.setTableSchemaName(rs1.getString("TABLE_SCHEM"));
             col.setTableName(rs1.getString("TABLE_NAME"));
@@ -180,13 +180,13 @@ public class DtsTableMetaTools {
         while (rs2.next()) {
             String indexName = rs2.getString("INDEX_NAME");
             String colName = rs2.getString("COLUMN_NAME").toUpperCase();
-            TxcColumnMeta col = tm.getAllColumns().get(colName);
+            ColumnMeta col = tm.getAllColumns().get(colName);
 
             if (tm.getAllIndexes().containsKey(indexName)) {
-                TxcIndex index = tm.getAllIndexes().get(indexName);
+                SqlIndex index = tm.getAllIndexes().get(indexName);
                 index.getValues().add(col);
             } else {
-                TxcIndex index = new TxcIndex();
+                SqlIndex index = new SqlIndex();
                 index.setIndexName(indexName);
                 index.setNonUnique(rs2.getBoolean("NON_UNIQUE"));
                 index.setIndexQualifier(rs2.getString("INDEX_QUALIFIER"));

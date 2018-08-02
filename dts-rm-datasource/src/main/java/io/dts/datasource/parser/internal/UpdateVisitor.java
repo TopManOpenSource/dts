@@ -1,4 +1,4 @@
-package io.dts.datasource.parser.vistor.mysql;
+package io.dts.datasource.parser.internal;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -7,15 +7,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
-import io.dts.datasource.parser.DtsSQLStatement;
-import io.dts.datasource.parser.struct.TxcTable;
-import io.dts.datasource.parser.struct.TxcTableMeta;
 
-public class DtsUpdateVisitor extends AbstractDtsVisitor {
+import io.dts.datasource.model.SqlModel;
+import io.dts.datasource.model.SqlTable;
+import io.dts.datasource.model.SqlTableMeta;
 
-    private static final Logger logger = LoggerFactory.getLogger(DtsUpdateVisitor.class);
+public class UpdateVisitor extends AbstractSqlVisitor {
 
-    public DtsUpdateVisitor(DtsSQLStatement node, List<Object> parameterSet) {
+    private static final Logger logger = LoggerFactory.getLogger(UpdateVisitor.class);
+
+    public UpdateVisitor(SqlModel node, List<Object> parameterSet) {
         super(node, parameterSet);
     }
 
@@ -35,11 +36,11 @@ public class DtsUpdateVisitor extends AbstractDtsVisitor {
     }
 
     @Override
-    public TxcTable executeAndGetFrontImage(Statement st) throws SQLException {
-        TxcTable tableOriginalValue;
+    public SqlTable executeAndGetFrontImage(Statement st) throws SQLException {
+        SqlTable tableOriginalValue;
         String sql = null;
         try {
-            TxcTableMeta tableMeta = getTableMeta();
+            SqlTableMeta tableMeta = getTableMeta();
             tableOriginalValue = getTableOriginalValue();
             tableOriginalValue.setTableMeta(tableMeta);
             tableOriginalValue.setTableName(tableMeta.getTableName());
@@ -58,14 +59,14 @@ public class DtsUpdateVisitor extends AbstractDtsVisitor {
     }
 
     @Override
-    public TxcTable executeAndGetRearImage(Statement st) throws SQLException {
-        TxcTable tableOriginalValue;
-        TxcTable tablePresentValue;
+    public SqlTable executeAndGetRearImage(Statement st) throws SQLException {
+        SqlTable tableOriginalValue;
+        SqlTable tablePresentValue;
         String sql = null;
         try {
             tableOriginalValue = getTableOriginalValue();
             tablePresentValue = getTablePresentValue();
-            TxcTableMeta tableMeta = getTableMeta();
+            SqlTableMeta tableMeta = getTableMeta();
 
             // SQL执行后查询DB行现值，用户脏读检查
             // 更新后查询受影响行的现值

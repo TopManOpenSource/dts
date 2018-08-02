@@ -5,9 +5,9 @@ import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 
+import io.dts.datasource.model.SqlType;
 import io.dts.datasource.sql.DtsDataSource;
 import io.dts.datasource.sql.internal.StatementAdaper;
-import io.dts.datasource.parser.struct.SqlType;
 
 public final class StatementHelper {
 

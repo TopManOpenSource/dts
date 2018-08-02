@@ -1,4 +1,4 @@
-package io.dts.datasource.parser.vistor.mysql;
+package io.dts.datasource.parser.internal;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -8,12 +8,13 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
-import io.dts.datasource.parser.DtsSQLStatement;
-import io.dts.datasource.parser.struct.TxcTable;
 
-public class DtsSelectVisitor extends AbstractDtsVisitor {
+import io.dts.datasource.model.SqlModel;
+import io.dts.datasource.model.SqlTable;
 
-    public DtsSelectVisitor(DtsSQLStatement node, List<Object> parameterSet) {
+public class SelectVisitor extends AbstractSqlVisitor {
+
+    public SelectVisitor(SqlModel node, List<Object> parameterSet) {
         super(node, parameterSet);
     }
 
@@ -26,12 +27,12 @@ public class DtsSelectVisitor extends AbstractDtsVisitor {
     }
 
     @Override
-    public TxcTable executeAndGetFrontImage(final Statement st) throws SQLException {
+    public SqlTable executeAndGetFrontImage(final Statement st) throws SQLException {
         return getTableOriginalValue();
     }
 
     @Override
-    public TxcTable executeAndGetRearImage(final Statement st) throws SQLException {
+    public SqlTable executeAndGetRearImage(final Statement st) throws SQLException {
         return getTablePresentValue();
     }
 

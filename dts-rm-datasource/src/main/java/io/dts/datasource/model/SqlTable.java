@@ -1,33 +1,33 @@
-package io.dts.datasource.parser.struct;
+package io.dts.datasource.model;
 
 import java.util.ArrayList;
 import java.util.List;
 import com.alibaba.fastjson.annotation.JSONField;
 import io.dts.common.exception.DtsException;
 
-public class TxcTable {
+public class SqlTable {
     @JSONField(serialize = false)
-    private TxcTableMeta tableMeta;
+    private SqlTableMeta tableMeta;
     private String schemaName; // 实例名
     private String tableName; // 表名
     private String alias; // 别名
-    private List<TxcLine> lines = new ArrayList<TxcLine>();
+    private List<SqlLine> lines = new ArrayList<SqlLine>();
 
-    public TxcTable() {}
+    public SqlTable() {}
 
     public int getLinesNum() {
         return lines.size();
     }
 
-    public List<TxcLine> getLines() {
+    public List<SqlLine> getLines() {
         return lines;
     }
 
-    public void setLines(List<TxcLine> lineList) {
+    public void setLines(List<SqlLine> lineList) {
         this.lines = lineList;
     }
 
-    public void addLine(TxcLine line) {
+    public void addLine(SqlLine line) {
         lines.add(line);
 
         if (lines.size() > 1000) {
@@ -36,13 +36,13 @@ public class TxcTable {
     }
 
     @SuppressWarnings("serial")
-    public List<TxcField> pkRows() {
+    public List<SqlField> pkRows() {
         final String pkName = getTableMeta().getPkName();
-        return new ArrayList<TxcField>() {
+        return new ArrayList<SqlField>() {
             {
-                for (TxcLine line : lines) {
-                    List<TxcField> fields = line.getFields();
-                    for (TxcField field : fields) {
+                for (SqlLine line : lines) {
+                    List<SqlField> fields = line.getFields();
+                    for (SqlField field : fields) {
                         if (field.getFieldName().equalsIgnoreCase(pkName)) {
                             add(field);
                             break;
@@ -53,22 +53,22 @@ public class TxcTable {
         };
     }
 
-    public TxcTableMeta getTableMeta() {
+    public SqlTableMeta getTableMeta() {
         if (tableMeta == null) {
             throw new DtsException("should set table meta when table data init");
         }
         return tableMeta;
     }
 
-    public void setTableMeta(TxcTableMeta tableMeta) {
+    public void setTableMeta(SqlTableMeta tableMeta) {
         this.tableMeta = tableMeta;
     }
 
     public String toString() {
         StringBuilder appender = new StringBuilder();
         for (int i = 0; i < lines.size(); i++) {
-            List<TxcField> line = lines.get(i).getFields();
-            for (TxcField obj : line) {
+            List<SqlField> line = lines.get(i).getFields();
+            for (SqlField obj : line) {
                 appender.append(obj.getFieldValue());
             }
         }
@@ -78,8 +78,8 @@ public class TxcTable {
     public String toStringWithEndl() {
         StringBuilder appender = new StringBuilder();
         for (int i = 0; i < lines.size(); i++) {
-            List<TxcField> line = lines.get(i).getFields();
-            for (TxcField obj : line) {
+            List<SqlField> line = lines.get(i).getFields();
+            for (SqlField obj : line) {
                 appender.append(obj.getFieldValue()).append(":");
             }
             appender.append("\n");

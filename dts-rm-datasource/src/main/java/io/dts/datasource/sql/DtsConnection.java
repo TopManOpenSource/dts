@@ -8,10 +8,10 @@ import java.sql.Statement;
 
 import io.dts.common.context.DtsContext;
 import io.dts.common.context.DtsXID;
+import io.dts.datasource.DatasourceRuntimeContext;
 import io.dts.datasource.log.DtsLogManager;
+import io.dts.datasource.model.UndoLogType;
 import io.dts.datasource.sql.internal.ConnectionAdaper;
-import io.dts.datasource.sql.model.UndoLogType;
-import io.dts.datasource.parser.struct.TxcRuntimeContext;
 
 public class DtsConnection extends ConnectionAdaper {
 
@@ -19,7 +19,7 @@ public class DtsConnection extends ConnectionAdaper {
 
     private Connection connection;
 
-    private TxcRuntimeContext txcContext;
+    private DatasourceRuntimeContext txcContext;
 
     public DtsConnection(final DtsDataSource dtsDataSource, final Connection connection) throws SQLException {
         this.dtsDataSource = dtsDataSource;
@@ -57,7 +57,7 @@ public class DtsConnection extends ConnectionAdaper {
             throw new SQLException("should set autocommit false first.");
         }
         long branchId = dtsDataSource.getResourceManager().register(dtsDataSource.getDbName());
-        txcContext = new TxcRuntimeContext();
+        txcContext = new DatasourceRuntimeContext();
         txcContext.setBranchId(branchId);
         txcContext.setXid(DtsContext.getInstance().getCurrentXid());
     }
@@ -180,7 +180,7 @@ public class DtsConnection extends ConnectionAdaper {
     }
 
     @Override
-    public TxcRuntimeContext getTxcContext() {
+    public DatasourceRuntimeContext getTxcContext() {
         return txcContext;
     }
 }

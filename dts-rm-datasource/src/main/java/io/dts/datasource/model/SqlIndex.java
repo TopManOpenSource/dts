@@ -1,10 +1,10 @@
-package io.dts.datasource.parser.struct;
+package io.dts.datasource.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TxcIndex {
-    private List<TxcColumnMeta> values = new ArrayList<TxcColumnMeta>();
+public class SqlIndex {
+    private List<ColumnMeta> values = new ArrayList<ColumnMeta>();
 
     private boolean nonUnique; // 不唯一
     private String indexQualifier;// 索引目录（可能为空）
@@ -15,18 +15,18 @@ public class TxcIndex {
     private int cardinality; // 基数
     private int ordinalPosition; // 表中列的索引（从1开始）
 
-    public TxcIndex() {}
+    public SqlIndex() {}
 
     // public TxcIndex(ColumnMeta column) {
     // indexName = column.getName();
     // values.add(new TxcColumnMeta(column));
     // }
 
-    public List<TxcColumnMeta> getValues() {
+    public List<ColumnMeta> getValues() {
         return values;
     }
 
-    public void setValues(List<TxcColumnMeta> values) {
+    public void setValues(List<ColumnMeta> values) {
         this.values = values;
     }
 
@@ -94,7 +94,7 @@ public class TxcIndex {
         this.indextype = indextype;
     }
 
-    public List<TxcColumnMeta> getIndexvalue() {
+    public List<ColumnMeta> getIndexvalue() {
         return values;
     }
 

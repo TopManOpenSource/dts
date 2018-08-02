@@ -1,4 +1,4 @@
-package io.dts.datasource.parser.vistor.mysql;
+package io.dts.datasource.parser.internal;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,16 +19,16 @@ import com.alibaba.druid.sql.visitor.SQLEvalVisitorUtils;
 import com.alibaba.druid.util.JdbcUtils;
 import com.google.common.base.CharMatcher;
 import io.dts.common.exception.DtsException;
-import io.dts.datasource.parser.DtsObjectWapper;
-import io.dts.datasource.parser.DtsSQLStatement;
-import io.dts.datasource.parser.struct.DatabaseType;
-import io.dts.datasource.parser.struct.TxcColumnMeta;
-import io.dts.datasource.parser.struct.TxcTable;
-import io.dts.datasource.parser.struct.TxcTableMeta;
+import io.dts.datasource.model.DatabaseType;
+import io.dts.datasource.model.SqlModel;
+import io.dts.datasource.model.ColumnMeta;
+import io.dts.datasource.model.SqlTable;
+import io.dts.datasource.model.SqlTableMeta;
+import io.dts.datasource.util.DtsObjectUtil;
 
-public class DtsInsertVisitor extends AbstractDtsVisitor {
+public class InsertVisitor extends AbstractSqlVisitor {
 
-    public DtsInsertVisitor(DtsSQLStatement node, List<Object> parameterSet) {
+    public InsertVisitor(SqlModel node, List<Object> parameterSet) {
         super(node, parameterSet);
     }
 
@@ -41,10 +41,10 @@ public class DtsInsertVisitor extends AbstractDtsVisitor {
     }
 
     @Override
-    public TxcTable executeAndGetFrontImage(Statement st) throws SQLException {
+    public SqlTable executeAndGetFrontImage(Statement st) throws SQLException {
         // insert前不需进行任何操作
-        TxcTableMeta tableMeta = getTableMeta();
-        TxcTable tableOriginalValue = getTableOriginalValue();
+        SqlTableMeta tableMeta = getTableMeta();
+        SqlTable tableOriginalValue = getTableOriginalValue();
         tableOriginalValue.setTableMeta(tableMeta);
         tableOriginalValue.setTableName(tableMeta.getTableName());
         tableOriginalValue.setAlias(tableMeta.getAlias());
@@ -53,11 +53,11 @@ public class DtsInsertVisitor extends AbstractDtsVisitor {
     }
 
     @Override
-    public TxcTable executeAndGetRearImage(Statement st) throws SQLException {
+    public SqlTable executeAndGetRearImage(Statement st) throws SQLException {
         String sql = getSelectSql() + getWhereCondition(st);
 
-        TxcTable tablePresentValue = getTablePresentValue();
-        TxcTableMeta tableMeta = getTableMeta();
+        SqlTable tablePresentValue = getTablePresentValue();
+        SqlTableMeta tableMeta = getTableMeta();
         // SQL执行后查询DB行现值，用户脏读检查
         // 此时，还没有拿到数据的索引值，因此需要使用不带KEY的SQL去查询现值
         tablePresentValue.setTableMeta(tableMeta);
@@ -139,10 +139,10 @@ public class DtsInsertVisitor extends AbstractDtsVisitor {
     private void selectByPK(StringBuilder appender, List<SQLExpr> itemsList, List<SQLExpr> cols) {
         for (int i = 0; i < itemsList.size(); i++) {
             String attrName = ((SQLIdentifierExpr)cols.get(i)).getName();
-            TxcTableMeta tableMeta = getTableMeta();
-            Map<String, TxcColumnMeta> index = tableMeta.getPrimaryKeyMap();
+            SqlTableMeta tableMeta = getTableMeta();
+            Map<String, ColumnMeta> index = tableMeta.getPrimaryKeyMap();
 
-            TxcColumnMeta colMeta = tableMeta.getAllColumns().get(attrName.toUpperCase());
+            ColumnMeta colMeta = tableMeta.getAllColumns().get(attrName.toUpperCase());
             if (colMeta == null) {
                 colMeta = tableMeta.getAllColumns().get(attrName.toLowerCase());
             }
@@ -161,14 +161,14 @@ public class DtsInsertVisitor extends AbstractDtsVisitor {
                 evalExpression(getSQLStatement().getDatabaseType(), itemsList.get(i), getParameters());
 
             attrName = String.format("%s.%s", tableName, attrName);
-            DtsObjectWapper.appendParamMarkerObject(attrName, valuePair.value, appender);
+            DtsObjectUtil.appendParamMarkerObject(attrName, valuePair.value, appender);
             return;
         }
     }
 
     private void selectByAutoIncreaseKey(StringBuilder appender, List<SQLExpr> itemsList, List<SQLExpr> cols,
         Statement st) {
-        TxcColumnMeta column = getTableMeta().getAutoIncreaseColumn();
+        ColumnMeta column = getTableMeta().getAutoIncreaseColumn();
         if (column == null) {
             throw new IllegalArgumentException("no auto increase column.");
         }
@@ -235,9 +235,9 @@ public class DtsInsertVisitor extends AbstractDtsVisitor {
 
         for (int i = 0; i < itemsList.size(); i++) {
             String attrName = ((SQLIdentifierExpr)cols.get(i)).getName();
-            TxcTableMeta tableMeta = getTableMeta();
+            SqlTableMeta tableMeta = getTableMeta();
 
-            TxcColumnMeta colMeta = tableMeta.getAllColumns().get(attrName.toUpperCase());
+            ColumnMeta colMeta = tableMeta.getAllColumns().get(attrName.toUpperCase());
             if (colMeta == null) {
                 colMeta = tableMeta.getAllColumns().get(attrName.toLowerCase());
             }
@@ -250,7 +250,7 @@ public class DtsInsertVisitor extends AbstractDtsVisitor {
             ValuePair valuePair =
                 evalExpression(getSQLStatement().getDatabaseType(), itemsList.get(i), getParameters());
             attrName = String.format("%s.%s", tableName, attrName);
-            DtsObjectWapper.appendParamMarkerObject(attrName, valuePair.getValue(), appender);
+            DtsObjectUtil.appendParamMarkerObject(attrName, valuePair.getValue(), appender);
             return;
         }
     }

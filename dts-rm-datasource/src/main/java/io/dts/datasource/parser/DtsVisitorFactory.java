@@ -14,17 +14,16 @@ import com.alibaba.druid.sql.dialect.oracle.parser.OracleStatementParser;
 import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerStatementParser;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import io.dts.common.exception.DtsException;
-import io.dts.datasource.parser.struct.DatabaseType;
-import io.dts.datasource.parser.struct.SqlType;
-import io.dts.datasource.parser.vistor.ITxcVisitor;
-import io.dts.datasource.parser.vistor.SQLVisitorRegistry;
+import io.dts.datasource.model.DatabaseType;
+import io.dts.datasource.model.SqlModel;
+import io.dts.datasource.model.SqlType;
 
 public class DtsVisitorFactory {
 
-    public static ITxcVisitor createSqlVisitor(final DatabaseType databaseType, Connection connection, final String sql,
+    public static SqlVisitor createSqlVisitor(final DatabaseType databaseType, Connection connection, final String sql,
         final List<Object> parameterSet) throws SQLException {
         SQLStatement sqlStatement = getSQLStatementParser(databaseType, sql).parseStatement();
-        ITxcVisitor visit = getSQLVisitor(databaseType, parameterSet, sql, sqlStatement);
+        SqlVisitor visit = getSQLVisitor(databaseType, parameterSet, sql, sqlStatement);
         visit.setConnection(connection);
         return visit;
     }
@@ -46,23 +45,23 @@ public class DtsVisitorFactory {
         }
     }
 
-    private static ITxcVisitor getSQLVisitor(final DatabaseType databaseType, final List<Object> parameterSet,
+    private static SqlVisitor getSQLVisitor(final DatabaseType databaseType, final List<Object> parameterSet,
         final String sql, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SQLSelectStatement) {
             return VisitorLogProxy.enhance(SQLVisitorRegistry.getSelectVistor(databaseType),
-                new DtsSQLStatement(sql, SqlType.SELECT, databaseType, sqlStatement), parameterSet);
+                new SqlModel(sql, SqlType.SELECT, databaseType, sqlStatement), parameterSet);
         }
         if (sqlStatement instanceof SQLInsertStatement) {
             return VisitorLogProxy.enhance(SQLVisitorRegistry.getInsertVistor(databaseType),
-                new DtsSQLStatement(sql, SqlType.INSERT, databaseType, sqlStatement), parameterSet);
+                new SqlModel(sql, SqlType.INSERT, databaseType, sqlStatement), parameterSet);
         }
         if (sqlStatement instanceof SQLUpdateStatement) {
             return VisitorLogProxy.enhance(SQLVisitorRegistry.getUpdateVistor(databaseType),
-                new DtsSQLStatement(sql, SqlType.UPDATE, databaseType, sqlStatement), parameterSet);
+                new SqlModel(sql, SqlType.UPDATE, databaseType, sqlStatement), parameterSet);
         }
         if (sqlStatement instanceof SQLDeleteStatement) {
             return VisitorLogProxy.enhance(SQLVisitorRegistry.getDeleteVistor(databaseType),
-                new DtsSQLStatement(sql, SqlType.DELETE, databaseType, sqlStatement), parameterSet);
+                new SqlModel(sql, SqlType.DELETE, databaseType, sqlStatement), parameterSet);
         }
         throw new DtsException("Unsupported SQL statement: " + sqlStatement);
     }

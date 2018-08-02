@@ -1,4 +1,4 @@
-package io.dts.datasource.parser.struct;
+package io.dts.datasource.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class TxcTableMeta {
+public class SqlTableMeta {
 
     private String schemaName; // 实例名
     private String tableName; // 表名
     private String alias; // 别名
 
-    private Map<String/* 属性名 */, TxcColumnMeta> allColumns = new HashMap<String, TxcColumnMeta>();
-    private Map<String/* 索引名 */, TxcIndex> allIndexes = new HashMap<String, TxcIndex>();
+    private Map<String/* 属性名 */, ColumnMeta> allColumns = new HashMap<String, ColumnMeta>();
+    private Map<String/* 索引名 */, SqlIndex> allIndexes = new HashMap<String, SqlIndex>();
 
     public String getSchemaName() {
         return schemaName;
@@ -34,30 +34,30 @@ public class TxcTableMeta {
     /**
      * 获得表得某一个属性
      */
-    public TxcColumnMeta getColumnMeta(String colName) {
+    public ColumnMeta getColumnMeta(String colName) {
         return allColumns.get(colName);
     }
 
     /**
      * 获取所有列
      */
-    public Map<String, TxcColumnMeta> getAllColumns() {
+    public Map<String, ColumnMeta> getAllColumns() {
         return allColumns;
     }
 
     /**
      * 获取表索引信息
      */
-    public Map<String, TxcIndex> getAllIndexes() {
+    public Map<String, SqlIndex> getAllIndexes() {
         return allIndexes;
     }
 
     /**
      * 获取自增主键列
      */
-    public TxcColumnMeta getAutoIncreaseColumn() {
-        for (Entry<String, TxcColumnMeta> entry : allColumns.entrySet()) {
-            TxcColumnMeta col = entry.getValue();
+    public ColumnMeta getAutoIncreaseColumn() {
+        for (Entry<String, ColumnMeta> entry : allColumns.entrySet()) {
+            ColumnMeta col = entry.getValue();
             if ("YES".equalsIgnoreCase(col.getIsAutoincrement()) == true) {
                 return col;
             }
@@ -68,12 +68,12 @@ public class TxcTableMeta {
     /**
      * 获取表主键列
      */
-    public Map<String, TxcColumnMeta> getPrimaryKeyMap() {
-        Map<String, TxcColumnMeta> pk = new HashMap<String, TxcColumnMeta>();
-        for (Entry<String, TxcIndex> entry : allIndexes.entrySet()) {
-            TxcIndex index = entry.getValue();
+    public Map<String, ColumnMeta> getPrimaryKeyMap() {
+        Map<String, ColumnMeta> pk = new HashMap<String, ColumnMeta>();
+        for (Entry<String, SqlIndex> entry : allIndexes.entrySet()) {
+            SqlIndex index = entry.getValue();
             if (index.getIndextype().value() == IndexType.PRIMARY.value()) {
-                for (TxcColumnMeta col : index.getValues()) {
+                for (ColumnMeta col : index.getValues()) {
                     pk.put(col.getColumnName().toUpperCase(), col);
                 }
             }
@@ -93,7 +93,7 @@ public class TxcTableMeta {
     public List<String> getPrimaryKeyOnlyName() {
         return new ArrayList<String>() {
             {
-                for (Entry<String, TxcColumnMeta> entry : getPrimaryKeyMap().entrySet()) {
+                for (Entry<String, ColumnMeta> entry : getPrimaryKeyMap().entrySet()) {
                     add(entry.getKey());
                 }
             }
@@ -134,15 +134,15 @@ public class TxcTableMeta {
         sb.append("(");
 
         boolean flag = true;
-        Map<String, TxcColumnMeta> allColumns = getAllColumns();
-        for (Entry<String, TxcColumnMeta> entry : allColumns.entrySet()) {
+        Map<String, ColumnMeta> allColumns = getAllColumns();
+        for (Entry<String, ColumnMeta> entry : allColumns.entrySet()) {
             if (flag == true) {
                 flag = false;
             } else {
                 sb.append(",");
             }
 
-            TxcColumnMeta col = entry.getValue();
+            ColumnMeta col = entry.getValue();
             sb.append(String.format(" `%s` ", col.getColumnName()));
             sb.append(col.getDataTypeName());
             if (col.getColumnSize() > 0) {
@@ -159,11 +159,11 @@ public class TxcTableMeta {
             }
         }
 
-        Map<String, TxcIndex> allIndexes = getAllIndexes();
-        for (Entry<String, TxcIndex> entry : allIndexes.entrySet()) {
+        Map<String, SqlIndex> allIndexes = getAllIndexes();
+        for (Entry<String, SqlIndex> entry : allIndexes.entrySet()) {
             sb.append(", ");
 
-            TxcIndex index = entry.getValue();
+            SqlIndex index = entry.getValue();
             switch (index.getIndextype()) {
                 case FullText:
                     break;
@@ -182,7 +182,7 @@ public class TxcTableMeta {
 
             sb.append(" (");
             boolean f = true;
-            for (TxcColumnMeta c : index.getValues()) {
+            for (ColumnMeta c : index.getValues()) {
                 if (f == true) {
                     f = false;
                 } else {

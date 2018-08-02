@@ -1,6 +1,6 @@
-package io.dts.datasource.parser.struct;
+package io.dts.datasource.model;
 
-public class TxcColumnMeta {
+public class ColumnMeta {
     private String tableCat;// 表目录（可能为空）
     private String tableSchemaName;// 表的架构（可能为空）
     private String tableName_;// 表名
@@ -33,7 +33,7 @@ public class TxcColumnMeta {
      */
     private String isAutoincrement;
 
-    public TxcColumnMeta() {}
+    public ColumnMeta() {}
 
     // public TxcColumnMeta(ColumnMeta meta) {
     // setTableName(meta.getTableName());

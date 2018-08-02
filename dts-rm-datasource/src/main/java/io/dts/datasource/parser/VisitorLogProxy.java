@@ -17,7 +17,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.dts.common.exception.DtsException;
-import io.dts.datasource.parser.vistor.ITxcVisitor;
+import io.dts.datasource.model.SqlModel;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
@@ -26,17 +26,17 @@ public final class VisitorLogProxy {
     private static final Logger log = LoggerFactory.getLogger(VisitorLogProxy.class);
 
     @SuppressWarnings("unchecked")
-    public static <T> T enhance(final Class<T> target, final DtsSQLStatement sqlStatement,
+    public static <T> T enhance(final Class<T> target, final SqlModel sqlStatement,
         final List<Object> parameterSet) {
         if (log.isTraceEnabled()) {
             Enhancer result = new Enhancer();
             result.setSuperclass(target);
             result.setCallback(new VisitorHandler());
-            return (T)result.create(new Class[] {DtsSQLStatement.class, List.class},
+            return (T)result.create(new Class[] {SqlModel.class, List.class},
                 new Object[] {sqlStatement, parameterSet});
         } else {
             try {
-                return target.getDeclaredConstructor(DtsSQLStatement.class, List.class).newInstance(sqlStatement,
+                return target.getDeclaredConstructor(SqlModel.class, List.class).newInstance(sqlStatement,
                     parameterSet);
             } catch (final InstantiationException | IllegalAccessException | NoSuchMethodException
                 | InvocationTargetException ex) {
@@ -62,7 +62,7 @@ public final class VisitorLogProxy {
             }
             Object result = methodProxy.invokeSuper(enhancedObject, arguments);
             if (isPrintable(method)) {
-                ITxcVisitor visitor = (ITxcVisitor)enhancedObject;
+                SqlVisitor visitor = (SqlVisitor)enhancedObject;
                 log.trace("{}endVisit node: {}", hierarchyIndex, arguments[0].getClass());
                 log.trace("{}endVisit full sql: {}", hierarchyIndex, visitor.getFullSql());
                 hierarchyOut();
