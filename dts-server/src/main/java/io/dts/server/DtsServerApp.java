@@ -30,10 +30,6 @@ import com.hazelcast.zookeeper.ZookeeperDiscoveryProperties;
 import com.hazelcast.zookeeper.ZookeeperDiscoveryStrategyFactory;
 import io.dts.server.network.NettyServerController;
 
-/**
- * @author liushiming
- * @version Application.java, v 0.0.1 2017年9月5日 下午6:31:29 liushiming
- */
 @SpringBootApplication
 public class DtsServerApp {
 
